@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<!-- O lang="pt-br" é essencial para o 'hyphens: auto' funcionar -->
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- Título atualizado para v44 -->
+    <title>Jokenpo Pro - v44 (Text Fix)</title>
+    
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiSm9rZW5wbyBQcm8iLCJzaG9ydF9uYW1lIjoiSm9rZW5wbyIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWExYTJlIiwidGhlbWVfY29sb3IiOiIjMWExYTJlIn0=">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js" defer></script>
+    
+    <!-- 
+      *********************
+      *** CSS (Estilos)
+      *********************
+    -->
+    <style>
+        :root {
+            /* Tema Escuro (Default) */
+            --bg-grad-start: #161623;
+            --bg-grad-end: #1a1a2e;
+            --card-color: #1e1e3f;
+            --bg-soft: #2a2a4e;
+            --primary-color: #00e5ff;
+            --primary-color-dark: #00b8cc;
+            --spock-color: #4d94ff;
+            --lizard-color: #00ff7f;
+            --text-color: #f0f0f0;
+            --text-color-strong: #ffffff;
+            --text-color-muted: rgba(240, 240, 240, 0.7);
+            --win-color: #00ff7f;
+            --lose-color: #ff4d4d;
+            --draw-color: #f0f0f0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border-color-strong: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --shadow-color-primary: rgba(0, 229, 255, 0.3);
+            --transition-time: 0.3s;
+        }
+
+        /* Tema Claro */
+        body.light-theme {
+            --bg-grad-start: #eef2f7;
+            --bg-grad-end: #f0f4f8;
+            --card-color: #ffffff;
+            --bg-soft: #f0f4f8;
+            --primary-color: #007bff;
+            --primary-color-dark: #0056b3;
+            --spock-color: #0056b3;
+            --lizard-color: #28a745;
+            --text-color: #212529;
+            --text-color-strong: #000000;
+            --text-color-muted: rgba(33, 37, 41, 0.8); 
+            --win-color: #28a745;
+            --lose-color: #dc3545;
+            --draw-color: #333;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --border-color-strong: rgba(0, 0, 0, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --shadow-color-primary: rgba(0, 123, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        html {
+            height: -webkit-fill-available; 
+            overflow-x: hidden; 
+            /* v33-FIX: Garantir full-screen */
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(145deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
+            color: var(--text-color);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            min-height: 100vh;
+            min-height: 100dvh; 
+            overflow: hidden; 
+            padding: 20px; 
+            transition: background-color 0.4s ease, color 0.4s ease;
+            position: relative;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+
+            overflow-wrap: break-word; 
+            -webkit-hyphens: auto; 
+            -ms-hyphens: auto; 
+            hyphens: auto; 
+            overflow-x: hidden; 
+            
+            /* v34-FIX: Body é o container relativo para as telas absolutas */
+            position: relative; 
+
+            /* v33-FIX: Garantir full-screen */
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .screen {
+            /* display: none; <-- v34-FIX: REMOVIDO */
+            display: flex; /* v34-FIX: ADICIONADO (para layout interno da tela) */
+            
+            /* v34-FIX: Telas agora são absolutas para empilhar e fazer fade */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            
+            width: 100%;
+            /* v33-FIX: Garantir full-screen e remover max-width limitante */
+            max-width: 500px; /* v35-FIX: Retornado o max-width original */
+            max-height: 100vh;
+            height: 100%;
+            
+            margin: 0 auto; 
+            flex-direction: column;
+            gap: 24px; 
+            background-color: var(--card-color);
+            background-image: linear-gradient(160deg, rgba(255,255,255,0.05), rgba(255,255,255,0));
+            backdrop-filter: blur(10px);
+            border-radius: 24px; 
+            padding: 24px;
+            box-shadow: 0 12px 45px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            
+            opacity: 0;
+            /* v34-FIX: Combina transform de centralização e animação */
+            transform: translate(-50%, -50%) scale(0.98);
+            visibility: hidden; /* v34-FIX: ADICIONADO */
+            
+            /* v34-FIX: Transição com visibility */
+            transition: opacity var(--transition-time) ease, transform var(--transition-time) ease, visibility 0s linear var(--transition-time);
+            
+            will-change: opacity, transform;
+            pointer-events: none; 
+        }
+        
+        .screen.active {
+            /* display: flex; <-- v34-FIX: REMOVIDO (movido para .screen base) */
+            opacity: 1;
+            /* v34-FIX: Combina transform de centralização e animação */
+            transform: translate(-50%, -50%) scale(1); 
+            visibility: visible; /* v34-FIX: ADICIONADO */
+            pointer-events: auto; 
+            
+            /* v34-FIX: Garante que a visibilidade seja imediata ao ativar */
+            transition-delay: 0s, 0s, 0s;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 0; 
+            }
+            .screen {
+                max-width: 100%;
+                min-height: 100dvh; 
+                height: 100%; /* v33-FIX: Garantir altura total em mobile */
+                border-radius: 0;
+                border: none;
+                padding: 20px;
+                padding-top: calc(env(safe-area-inset-top, 20px) + 10px); 
+                padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
+                gap: 20px; 
+            }
+        }
+        
+        /* --- Header: Título e Seletor de Tema --- */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: translateZ(30px);
+            flex-shrink: 0; 
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.25rem; 
+            font-weight: 800; 
+            margin: 0;
+            text-shadow: 0 4px 15px var(--shadow-color-primary);
+        }
+        
+        .settings-icon-btn {
+            background-color: var(--bg-soft);
+            border: 1px solid var(--border-color-strong);
+            color: var(--text-color-muted);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0; /* Impede que o botão encolha */
+        }
+        .settings-icon-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: rotate(20deg);
+        }
+
+        /* --- Estilos do Theme Switch (agora no modal) --- */
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 24px; position: relative; width: 44px; }
+        .theme-switch input { display: none; }
+        .slider {
+            background-color: var(--bg-grad-end); 
+            border: 1px solid var(--border-color-strong);
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+        .slider:before {
+            background-color: var(--primary-color);
+            bottom: 3px;
+            content: "";
+            height: 16px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 16px;
+        }
+        input:checked + .slider { background-color: var(--bg-soft); }
+        input:checked + .slider:before { transform: translateX(19px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
+
+        /* --- Botões de Navegação (Menu/Jogo) --- */
+        .btn-primary {
+            background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+            color: var(--bg-grad-start);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 24px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: 0 5px 20px var(--shadow-color-primary);
+            transform: translateZ(30px);
+            flex-shrink: 0;
+        }
+        .btn-primary:hover, .btn-primary:focus-visible {
+            transform: translateY(-3px) translateZ(40px);
+            box-shadow: 0 8px 25px var(--shadow-color-primary);
+        }
+        .btn-secondary-link {
+            background: none;
+            border: none;
+            color: var(--text-color-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 10px;
+            transform: translateZ(10px);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 5;
+        }
+        .btn-secondary-link:hover, .btn-secondary-link:focus-visible {
+            color: var(--primary-color);
+        }
+        
+        .btn-danger {
+            background-image: linear-gradient(135deg, var(--lose-color) 0%, #a02d2d 100%);
+            color: var(--text-color-strong);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 77, 77, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-soft);
+            color: var(--text-color-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: var(--bg-grad-end);
+            border-color: var(--border-color-strong);
+            color: var(--text-color-strong);
+        }
+
+
+        /* --- Layout do Menu (v20) --- */
+        #menu-screen .game-header {
+            text-align: center;
+            width: 100%;
+            justify-content: space-between; 
+            position: relative; 
+            flex-direction: row; 
+            gap: 8px;
+            align-items: center;
+        }
+        
+        /* v32-FIX: Alterado H1 para layout flex padrão para evitar sobreposição */
+        #menu-screen h1 { 
+            font-size: 2.5rem; 
+            z-index: 1;
+            text-align: center; /* ADICIONADO */
+            flex-grow: 1;       /* ADICIONADO */
+        }
+        
+        #menu-screen .settings-icon-btn {
+            position: relative; 
+            z-index: 2;
+            order: 0; 
+        }
+
+        .menu-emojis {
+            font-size: 1.5rem;
+            opacity: 0.5;
+            transform: translateZ(20px);
+            margin-top: 0; 
+            width: 100%;
+            text-align: center;
+        }
+        
+        .menu-pod {
+            width: 100%;
+            transform: translateZ(20px);
+            flex-shrink: 0;
+            background-color: var(--bg-soft);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .menu-pod h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 4px; 
+        }
+
+        .game-settings {
+            display: flex;
+            flex-direction: column; 
+            gap: 16px;
+        }
+        
+        .setting-group {
+            text-align: left;
+            width: 100%;
+        }
+        .setting-group label {
+            font-size: 0.9rem;
+            font-weight: 500; 
+            color: var(--text-color-muted);
+            display: block;
+            margin-bottom: 6px; 
+        }
+        .setting-group select {
+            background-color: var(--bg-grad-end); 
+            color: var(--text-color);
+            border: 1px solid var(--border-color-strong);
+            border-radius: 8px;
+            padding: 10px 12px; 
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            font-weight: 500;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+        .setting-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--shadow-color-primary);
+        }
+
+        .game-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 12px;
+        }
+        .control-btn {
+            background-color: var(--bg-soft); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-color-muted);
+            padding: 12px; 
+            border-radius: 8px;
+            font-size: 1.5rem; 
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0; 
+            line-height: 1; 
+        }
+        .control-btn:hover {
+            border-color: var(--border-color-strong);
+            color: var(--text-color-strong);
+            transform: translateY(-2px);
+        }
+        #rules-btn:hover { border-color: var(--spock-color); color: var(--spock-color); }
+        #stats-btn:hover { border-color: var(--lizard-color); color: var(--lizard-color); }
+        #reset-btn:hover { border-color: var(--lose-color); color: var(--lose-color); }
+        #clear-data-btn:hover { border-color: var(--lose-color); color: var(--lose-color); }
+        #import-data-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+        #export-data-btn:hover { border-color: var(--lizard-color); color: var(--lizard-color); }
+
+        /* --- Tela de Jogo --- */
+        #game-screen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 8px; 
+        }
+        
+        .active-mode-display {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-color-muted);
+            background-color: var(--bg-soft);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            transform: translateZ(10px);
+        }
+
+        .scoreboard {
+            display: grid; 
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background-color: var(--bg-soft);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transform: translateZ(20px);
+            width: 100%;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .score-column { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .score-column span:first-child { 
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-color-muted);
+            margin-bottom: 4px;
+        }
+        #player-score, #computer-score { 
+            font-size: 2.75rem; 
+            font-weight: 700;
+            line-height: 1.1;
+            transition: transform 0.3s ease; 
+        }
+        #player-score { color: var(--win-color); }
+        #computer-score { color: var(--lose-color); }
+        .score-pulse { animation: pulse-score 0.3s ease-out; }
+        
+        .round-wins-display { display: flex; gap: 6px; margin-top: 10px; height: 10px; }
+        .round-win-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--bg-grad-end);
+            border: 1px solid var(--border-color-strong);
+            transition: background-color 0.3s ease;
+        }
+        .round-win-dot.player.filled { background-color: var(--win-color); border-color: var(--win-color); }
+        .round-win-dot.computer.filled { background-color: var(--lose-color); border-color: var(--lose-color); }
+
+        .results {
+            min-height: 160px; 
+            transform: translateZ(20px);
+            text-align: center;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        #result-message {
+            font-weight: 700;
+            min-height: 2.5rem; 
+            padding-bottom: 8px;
+            border-bottom: 3px solid transparent; 
+            transition: border-color 0.3s ease;
+            font-size: clamp(1.4rem, 5vw, 1.6rem); 
+        }
+        #result-message.win { color: var(--win-color); border-color: var(--win-color); }
+        #result-message.lose { color: var(--lose-color); border-color: var(--lose-color); }
+        #result-message.draw { color: var(--text-color-strong); border-color: var(--border-color-strong); }
+
+        .choices-display { 
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+        }
+        .choice-vs {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color-muted);
+        }
+        .choice-pod {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-soft);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+            transform: scale(0.95);
+        }
+        .choice-pod label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-color-muted);
+        }
+        #player-choice-display, #computer-choice-display { 
+            font-size: 3.5rem; 
+            line-height: 1.2;
+        }
+        .choice-pod.selected {
+            opacity: 1;
+            transform: scale(1);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--shadow-color-primary);
+            animation: pop-in 0.3s ease-out;
+        }
+        .choice-pod.computer-thinking { 
+            animation: shake-pc 0.5s ease-in-out; 
+            border-color: var(--border-color-strong);
+        }
+        .choice-pod.win { border-color: var(--win-color); }
+        .choice-pod.lose { border-color: var(--lose-color); }
+        .choice-pod.draw { border-color: var(--border-color-strong); }
+
+
+        .choice-section {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        h2 {
+            font-size: 1.3rem; 
+            font-weight: 600; 
+            color: var(--text-color-strong);
+            margin-bottom: 20px; 
+            transform: translateZ(40px);
+        }
+        .choice-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap; 
+            transform: translateZ(40px);
+        }
+        .choice-btn {
+            background-color: var(--bg-soft);
+            border: none; 
+            box-shadow: 0 4px 10px var(--shadow-color), 0 0 0 2px var(--border-color); 
+            color: var(--text-color-strong);
+            font-size: 2.75rem; 
+            width: 88px; 
+            height: 88px; 
+            border-radius: 50%; 
+            cursor: pointer;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .choice-btn:hover:not(:disabled) {
+            transform: translateY(-5px) translateZ(20px) scale(1.05); 
+            box-shadow: 0 8px 20px var(--shadow-color), 0 0 0 2px var(--border-color-strong);
+        }
+        .choice-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+        .choice-btn:active:not(:disabled) { transform: translateY(0) translateZ(5px); box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4); }
+        .choice-btn.active-choice {
+            transform: scale(1.1) translateZ(10px) !important;
+            box-shadow: 0 0 20px var(--primary-color) !important;
+        }
+        
+        .choice-btn[data-choice="pedra"],
+        .choice-btn[data-choice="papel"],
+        .choice-btn[data-choice="tesoura"] { color: var(--primary-color); }
+        .choice-btn[data-choice="pedra"]:hover:not(:disabled),
+        .choice-btn[data-choice="papel"]:hover:not(:disabled),
+        .choice-btn[data-choice="tesoura"]:hover:not(:disabled) { 
+            background-color: var(--primary-color); color: var(--bg-grad-start); box-shadow: 0 8px 20px var(--shadow-color-primary), 0 0 0 2px var(--primary-color); 
+        }
+        
+        .choice-btn[data-choice="lagarto"] { color: var(--lizard-color); }
+        .choice-btn[data-choice="lagarto"]:hover:not(:disabled) { 
+            background-color: var(--lizard-color); color: var(--bg-grad-start); box-shadow: 0 8px 20px rgba(0, 255, 127, 0.3), 0 0 0 2px var(--lizard-color); 
+        }
+        
+        .choice-btn[data-choice="spock"] { color: var(--spock-color); }
+        .choice-btn[data-choice="spock"]:hover:not(:disabled) { 
+            background-color: var(--spock-color); color: var(--bg-grad-start); box-shadow: 0 8px 20px rgba(77, 148, 255, 0.3), 0 0 0 2px var(--spock-color); 
+        }
+        
+        .history-log-container {
+            max-height: 120px; 
+            overflow-y: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            transform: translateZ(10px);
+            text-align: left;
+            flex-shrink: 0;
+            background-color: var(--bg-soft);
+            padding: 12px;
+            border-radius: 8px;
+            scroll-behavior: smooth;
+        }
+        .history-log-container h3 { font-size: 0.9rem; font-weight: 600; color: var(--text-color-muted); margin-bottom: 8px; }
+        #history-log { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+        }
+        #history-log p { 
+            font-size: 0.9rem; 
+            color: var(--text-color-muted); 
+            line-height: 1.4;
+        }
+        #history-log p.player { color: var(--win-color); font-weight: 500; }
+        #history-log p.computer { color: var(--lose-color); font-weight: 500; }
+        #history-log p.draw { color: var(--text-color-muted); }
+
+        /* --- Modal (Base) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7); 
+            backdrop-filter: blur(5px); 
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background-color: var(--card-color);
+            margin: auto;
+            padding: 24px;
+            border: 1px solid var(--border-color-strong);
+            border-radius: 16px; 
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            /* v42-FIX: Polimento da sombra do modal */
+            box-shadow: 0 10px 40px var(--shadow-color);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1001;
+            max-height: 90dvh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px; 
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0; 
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 12px; 
+            position: sticky;
+            top: -24px; 
+            background-color: var(--card-color);
+            z-index: 10;
+            padding-top: 24px;
+            margin-bottom: 0;
+        }
+        .modal-content h2 { 
+            color: var(--primary-color); 
+            text-align: left; 
+            margin-bottom: 0; 
+            font-weight: 700;
+            font-size: clamp(1.5rem, 6vw, 1.75rem); 
+        }
+        .modal-close {
+            color: var(--text-color-muted);
+            background: none;
+            border: none;
+            font-size: 2.5rem; 
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+            line-height: 1;
+            padding: 0;
+        }
+        .modal-close:hover, .modal-close:focus-visible { 
+            color: var(--primary-color); 
+            transform: scale(1.1);
+        }
+
+        /* --- Conteúdo Específico dos Modais --- */
+        .rules-list { list-style: none; padding: 0; margin: 0; text-align: left; }
+        .rules-list li { 
+            font-size: 1rem; 
+            line-height: 1.6; 
+            margin-bottom: 12px; 
+            /* v41-FIX: Layout e padding equalizados */
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 56px;
+            padding: 12px 14px;
+            /* background-color: var(--bg-soft); <-- v41-FIX: Removido (movido para regras de tema) */
+            border-radius: 8px;
+            /* v41-FIX: Adiciona transição de hover */
+            transition: background-color 0.25s, transform 0.25s, border-color 0.25s;
+        }
+        
+        /* v41-FIX: Regra de hover movida para as seções de tema abaixo */
+        
+        .rules-list li:last-child { margin-bottom: 0; }
+        .rules-list li strong { 
+            font-size: 1.5rem; 
+            margin-right: 12px; 
+            /* min-width: 30px; <-- v41-FIX: Removido */
+            /* v41-FIX: Largura fixa para alinhamento */
+            width: 95px;
+            flex-shrink: 0;
+            text-align: left;
+        }
+        .rules-list li strong[data-rule="tesoura"] { color: var(--primary-color); }
+        .rules-list li strong[data-rule="papel"] { color: var(--primary-color); }
+        .rules-list li strong[data-rule="pedra"] { color: var(--primary-color); }
+        .rules-list li strong[data-rule="lagarto"] { color: var(--lizard-color); }
+        .rules-list li strong[data-rule="spock"] { color: var(--spock-color); }
+
+        /* v41-FIX: Adiciona contraste de tema e hover para a lista de regras */
+        body.light-theme .rules-list li {
+          background-color: rgba(0,0,0,0.03);
+          border: 1px solid rgba(0,0,0,0.08);
+        }
+        body.light-theme .rules-list li:hover {
+          background-color: rgba(0,0,0,0.06); /* Brilho escuro no tema claro */
+          transform: translateY(-2px);
+          border-color: rgba(0,0,0,0.12);
+        }
+        
+        body:not(.light-theme) .rules-list li {
+          background-color: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+        body:not(.light-theme) .rules-list li:hover {
+          background-color: rgba(255,255,255,0.06); /* Brilho claro no tema escuro */
+          transform: translateY(-2px);
+          border-color: rgba(255,255,255,0.12);
+        }
+
+        #stats-modal .setting-group {
+            margin-bottom: 0; 
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; text-align: left; }
+        .stat-item {
+            background-color: var(--bg-soft);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        .stat-item h3 { font-size: 0.9rem; color: var(--text-color-muted); margin-bottom: 8px; text-transform: uppercase; font-weight: 600; }
+        .stat-item p { font-size: 1.5rem; font-weight: 700; }
+        .stat-item.full-width { grid-column: 1 / -1; }
+        .stat-item.full-width p { display: flex; align-items: center; gap: 10px; }
+        .stat-item.full-width span { font-size: 2rem; }
+        .stat-item ul { list-style: none; padding-left: 0; font-size: 0.95rem; }
+        .stat-item li { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .stat-item li span:first-child {
+            min-width: 0; 
+            margin-right: 8px; 
+        }
+        .stat-item li .stat-percent { font-weight: 600; color: var(--text-color-muted); flex-shrink: 0; }
+        .chart-container { position: relative; height: 200px; width: 100%; margin-top: 10px; }
+        .chart-container p { font-size: 0.9rem; color: var(--text-color-muted); } 
+
+        .trend-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .trend-item {
+            font-size: 0.95rem;
+            line-height: 1.7; 
+        }
+        .trend-item strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .trend-item .emoji {
+            font-size: 1.25rem;
+            margin: 0 4px;
+        }
+        .trend-item .percent {
+            font-size: 0.85rem;
+            color: var(--text-color-muted);
+            font-weight: 500;
+        }
+
+        #confirm-modal-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-color-muted);
+            margin-bottom: 10px; 
+            text-align: center;
+        }
+        .confirm-modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .setting-item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .setting-item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .setting-item-row:first-child {
+            padding-top: 0;
+        }
+        .setting-item-row label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color-strong);
+        }
+        #audio-toggle-btn.modal-btn {
+            background-color: var(--bg-soft);
+            border: 1px solid var(--border-color-strong);
+            color: var(--text-color-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #audio-toggle-btn.modal-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+
+        /* --- Animações (Keyframes) --- */
+        @keyframes pop-in {
+            0% { transform: scale(0.9) translateZ(0); opacity: 0.5; }
+            70% { transform: scale(1.05) translateZ(10px); opacity: 1; }
+            100% { transform: scale(1) translateZ(0); opacity: 1; }
+        }
+        @keyframes shake-pc {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        @keyframes slideIn { from { transform: translateY(-30px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes pulse-score {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        @keyframes flash-win {
+            0%, 100% { background-color: var(--card-color); }
+            50% { background-color: rgba(0, 255, 127, 0.1); }
+        }
+        @keyframes flash-lose {
+            0%, 100% { background-color: var(--card-color); }
+            50% { background-color: rgba(255, 77, 77, 0.1); }
+        }
+        .flash-win { animation: flash-win 0.6s ease; }
+        .flash-lose { animation: flash-lose 0.6s ease; }
+
+
+        /* --- Responsividade (Ajustes finos) --- */
+        @media (max-width: 380px) {
+            .game-controls { grid-template-columns: 1fr 1fr 1fr; } 
+            
+            .choice-btn { width: 80px; height: 80px; font-size: 2.5rem; }
+            .choice-pod { min-height: 100px; }
+            #player-choice-display, #computer-choice-display { font-size: 3rem; }
+            .confirm-modal-actions { grid-template-columns: 1fr; }
+            
+            #menu-screen h1 {
+                font-size: clamp(1.8rem, 7vw, 2.1rem); 
+            }
+            #menu-screen .game-header {
+                justify-content: space-between;
+            }
+            .menu-emojis {
+                margin-top: -10px; 
+            }
+        }
+
+        /* v33-FIX: Media queries para responsividade em tablets (mantido) */
+        @media (max-width: 768px) {
+          h1 { font-size: clamp(1.8rem, 6vw, 2.2rem); }
+          .choice-btn { width: 72px; height: 72px; font-size: 2.2rem; }
+          .menu-pod { padding: 16px; }
+        }
+        
+        /* v35-FIX: Reverte modo paisagem para layout normal (vertical) com scroll */
+        @media (orientation: landscape) {
+          .screen { 
+              overflow-y: auto; /* Permite rolar o conteúdo vertical */
+              overflow-x: hidden; /* Evita scroll horizontal */
+          }
+          /* Garante que em paisagem pequena (celular) o padding não sufoque */
+          @media (max-height: 450px) {
+              .screen {
+                  padding: 16px;
+                  gap: 16px;
+              }
+              h1 { font-size: 1.8rem; }
+          }
+        }
+
+        /* --- Correção de quebra de texto em modais (v36-fix-textwrap) --- */
+        .modal-content,
+        .modal-content * {
+          hyphens: none !important;
+          -webkit-hyphens: none !important;
+          -ms-hyphens: none !important;
+          overflow-wrap: normal !important;
+          word-break: normal !important;
+        }
+
+        /* --- v39-fix: Melhorar formatação da análise tática --- */
+        #trend-analysis-content {
+          text-align: left;
+          font-size: 0.95rem;
+          line-height: 1.6;
+          color: var(--text-color);
+          word-break: keep-all;           /* evita quebra estranha */
+          overflow-wrap: normal;          /* mantém as frases inteiras */
+          hyphens: none;                  /* não divide palavras */
+        }
+        #trend-analysis-content strong,
+        #trend-analysis-content .emoji,
+        #trend-analysis-content .percent {
+          display: inline;
+          vertical-align: middle;
+        }
+        #trend-analysis-content .trend-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        #trend-analysis-content .trend-item {
+          display: block;                 /* força quebra entre linhas, não dentro delas */
+          text-align: left;
+          color: var(--text-color);
+          line-height: 1.6;
+        }
+        #trend-analysis-content .trend-item strong {
+          color: var(--primary-color);
+          font-weight: 600;
+        }
+
+        /* 💎 Correção de brilho e contraste v43 */body {
+          background-image: linear-gradient(145deg, #0f0f1e 0%, #1f1f3d 100%);
+        }.screen {
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+        }body.light-theme {
+          --bg-grad-start: #e9edf5;
+          --bg-grad-end: #f8faff;
+        }body.light-theme .screen {
+          box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+        }h1 {
+          text-shadow: 0 6px 25px var(--shadow-color-primary);
+        }/* Realce leve nos cards */.menu-pod, .stat-item, .choice-pod, .history-log-container {
+          transition: all 0.3s ease;
+        }.menu-pod:hover, .stat-item:hover, .choice-pod:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 25px var(--shadow-color-primary);
+        }/* Cores mais vivas */:root {
+          --primary-color: #00ffff;
+          --primary-color-dark: #00c0cc;
+          --shadow-color-primary: rgba(0, 255, 255, 0.35);
+        }
+        
+        /* 💎 v44-textfix — Nitidez e contraste do texto */body, button, select, label, h1, h2, h3, p, span {
+          text-rendering: optimizeLegibility !important;
+          -webkit-font-smoothing: antialiased !important;
+          -moz-osx-font-smoothing: grayscale !important;
+          font-smooth: always !important;
+          color: var(--text-color);
+        }/* Títulos e botões mais vivos */h1, h2, button, label {
+          filter: brightness(1.15) contrast(1.05);
+        }/* Evita perda de definição por blur de fundo */.screen, .menu-pod, .stat-item {
+          backdrop-filter: none !important;
+        }/* Aumenta contraste do texto principal */:root {
+          --text-color: #ffffff;
+          --text-color-strong: #ffffff;
+          --text-color-muted: rgba(255,255,255,0.85);
+        }body.light-theme {
+          --text-color: #000000;
+          --text-color-strong: #000000;
+          --text-color-muted: rgba(0,0,0,0.75);
+        }
+
+    </style>
+
+    <!-- v42-FIX: Add favicon and meta tags -->
+    <link rel="icon" type="image/png" href="https://emojiapi.dev/api/v1/victory-hand.png">
+    <meta name="description" content="Jokenpo Pro - Pedra, Papel, Tesoura, Lagarto e Spock com IA e estatísticas.">
+    <meta name="author" content="Paulo Zaqueu">
+
+</head>
+<body>
+
+    <!-- Tela de Menu -->
+    <section id="menu-screen" class="screen" role="main">
+        <header class="game-header">
+            <button id="settings-btn" class="settings-icon-btn" aria-label="Abrir Configurações">⚙️</button>
+            <h1>Jokenpo Pro</h1>
+            <div style="width: 44px; height: 44px;"></div>
+        </header>
+
+        <div class="menu-emojis">✊ ✋ ✌️ 🦎 🖖</div>
+        
+        <!-- v35-FIX: Wrapper removido -->
+        <div class="menu-pod">
+            <h2>Configurações</h2>
+            <div class="game-settings">
+                <div class="setting-group">
+                    <label for="game-mode-select">Modo de Jogo:</label>
+                    <select id="game-mode-select">
+                        <option value="free">Jogo Livre</option>
+                        <option value="bestOf3">Melhor de 3</option>
+                        <option value="bestOf5">Melhor de 5</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="difficulty-select">Nível da IA:</label>
+                    <select id="difficulty-select">
+                        <option value="easy">Fácil (Aleatória)</option>
+                        <option value="medium">Médio (Reativa)</option>
+                        <option value="hard">Difícil (Preditiva)</option>
+                        <option value="expert">Perito (Padrões)</option> 
+                    </select>
+                </div>
+            </div>
+            <button id="play-btn" class="btn-primary">JOGAR</button>
+        </div>
+            
+        <div class="menu-pod">
+            <h2>Ferramentas</h2>
+            <div class="game-controls">
+                <button id="rules-btn" class="control-btn" title="Regras" aria-label="Ver Regras">📜</button>
+                <button id="stats-btn" class="control-btn" title="Estatísticas" aria-label="Ver Estatísticas">📊</button>
+                <button id="reset-btn" class="control-btn" title="Resetar Scores" aria-label="Resetar Scores">🔄</button>
+                <button id="clear-data-btn" class="control-btn" title="Limpar Dados" aria-label="Limpar Dados">🗑️</button>
+                <button id="export-data-btn" class="control-btn" title="Exportar Dados" aria-label="Exportar Dados">💾</button>
+                <button id="import-data-btn" class="control-btn" title="Importar Dados" aria-label="Importar Dados">📤</button> 
+            </div>
+        </div>
+
+        <!-- v42-FIX: Add GitHub footer INSIDE menu screen -->
+        <footer style="text-align:center; font-size:0.85rem; color:var(--text-color-muted); margin-top:0px; padding-top: 0px; transform: translateZ(10px);">
+          <p>Desenvolvido por <strong>Paulo Zaqueu</strong> • 
+             <a href="https://github.com/Paulo968/JokenpoPro" target="_blank" 
+                style="color:var(--primary-color); text-decoration:none;">Ver no GitHub</a>
+          </p>
+        </footer>
+    </section>
+
+    <!-- Tela de Jogo -->
+    <section id="game-screen" class="screen" role="main">
+        
+        <!-- v35-FIX: Wrappers de coluna removidos, ordem restaurada -->
+        <header id="game-screen-header">
+            <button id="back-to-menu-btn" class="btn-secondary-link">❮ Voltar ao Menu</button>
+            <span id="active-game-mode" class="active-mode-display">Jogo Livre</span>
+        </header>
+
+        <div class="scoreboard">
+            <div class="score-column">
+                <span>Você</span>
+                <span id="player-score">0</span>
+                <div class="round-wins-display" id="player-round-wins"></div>
+            </div>
+            <div class="score-column">
+                <span>PC</span>
+                <span id="computer-score">0</span>
+                <div class="round-wins-display" id="computer-round-wins"></div>
+            </div>
+        </div>
+
+        <div class="results">
+            <p id="result-message" aria-live="assertive">Faça sua jogada!</p>
+            
+            <div class="choices-display">
+                <div class="choice-pod" id="player-choice-pod">
+                    <span id="player-choice-display">❔</span>
+                    <label>Você</label>
+                </div>
+                
+                <div class="choice-vs">vs</div>
+                
+                <div class="choice-pod" id="computer-choice-pod">
+                    <span id="computer-choice-display">❔</span>
+                    <label>PC</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="choice-section">
+            <h2>Escolha sua jogada:</h2>
+            <div class="choice-buttons">
+                <button class="choice-btn" data-choice="pedra" aria-label="Escolher Pedra – vence Tesoura e Lagarto">✊</button>
+                <button class="choice-btn" data-choice="papel" aria-label="Escolher Papel – vence Pedra e Spock">✋</button>
+                <button class="choice-btn" data-choice="tesoura" aria-label="Escolher Tesoura – vence Papel e Lagarto">✌️</button>
+                <button class="choice-btn" data-choice="lagarto" aria-label="Escolher Lagarto – vence Spock e Papel">🦎</button>
+                <button class="choice-btn" data-choice="spock" aria-label="Escolher Spock – vence Tesoura e Pedra">🖖</button>
+            </div>
+        </div>
+        
+        <div class="history-log-container">
+            <h3>Últimas Rodadas</h3>
+            <div id="history-log">
+                <!-- Conteúdo gerado via JS -->
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Modais -->
+    <div id="rules-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Regras do Jogo</h2>
+                <button class="modal-close" id="rules-modal-close" aria-label="Fechar modal">&times;</button>
+            </div>
+            <ul class="rules-list">
+                <li><strong data-rule="tesoura">✌️ Tesoura:</strong> Corta Papel, Decapita Lagarto</li>
+                <li><strong data-rule="papel">✋ Papel:</strong> Cobre Pedra, Refuta Spock</li>
+                <!-- v40-FIX: Texto da regra da Pedra atualizado para consistência -->
+                <li><strong data-rule="pedra">✊ Pedra:</strong> Esmaga Tesoura, Esmaga Lagarto</li>
+                <li><strong data-rule="lagarto">🦎 Lagarto:</strong> Envenena Spock, Come Papel</li>
+                <li><strong data-rule="spock">🖖 Spock:</strong> Vaporiza Pedra, Quebra Tesoura</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="stats-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                 <h2>Estatísticas</h2>
+                <button class="modal-close" id="stats-modal-close" aria-label="Fechar modal">&times;</button>
+            </div>
+            
+            <div class="setting-group" style="padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
+                <label for="stats-difficulty-filter">Filtrar por Dificuldade:</label>
+                <select id="stats-difficulty-filter">
+                    <option value="all">Geral (Todas)</option>
+                    <option value="easy">Fácil</option>
+                    <option value="medium">Médio</option>
+                    <option value="hard">Difícil</option>
+                    <option value="expert">Perito</option>
+                </select>
+            </div>
+            
+            <div class="stats-grid" id="stats-grid-content">
+                <p style="text-align: center; color: var(--text-color-muted);">Carregando estatísticas...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                 <h2 id="confirm-modal-title">Confirmar Ação</h2>
+                <button class="modal-close" id="confirm-modal-close-btn" aria-label="Fechar modal">&times;</button>
+            </div>
+            <p id="confirm-modal-message">Tem certeza que deseja continuar?</p>
+            <div class="confirm-modal-actions">
+                <button id="confirm-modal-btn-no" class="btn-secondary">Cancelar</button>
+                <button id="confirm-modal-btn-yes" class="btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                 <h2>Configurações</h2>
+                <button class="modal-close" id="settings-modal-close" aria-label="Fechar modal">&times;</button>
+            </div>
+            
+            <div class="setting-item-row">
+                <label for="theme-toggle-input">Tema Claro</label>
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="theme-toggle">
+                        <input type="checkbox" id="theme-toggle" />
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-item-row">
+                <label>Som</label>
+                <button id="audio-toggle-btn" class="modal-btn" aria-label="Ativar ou desativar som">🔈 Som</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 
+      *********************
+      *** JavaScript (Lógica)
+      *********************
+    -->
+    <script>
+        /* * --- CONSTANTES GLOBAIS ---
+         */
+        const CONFIG = {
+            aiMemorySpan: 15,
+            aiSmartChance: 0.75,
+            aiMistakeChance: 0.1, 
+            confettiParticles: { normal: 100, big: 200 },
+            tiltIntensity: 6, 
+            lerpFactor: 0.1,
+            saveDebounceTime: 500,
+            transitionTime: 300,
+            maxHistorySize: 200,      
+            aiExpertMistakeChance: 0.2, 
+            shortHistorySize: 20, 
+            aiMinLearnRounds: 5,        
+            aiBaseReaction: 250,        
+            aiReactionVariance: 450,    
+            aiExpertMemory: 5,          
+            aiExpertStreak: 3,          
+            statsMinRounds: 10          
+        };
+        
+        const CHOICES = ['pedra', 'papel', 'tesoura', 'lagarto', 'spock'];
+        const CHOICE_NAMES = { pedra: 'Pedra', papel: 'Papel', tesoura: 'Tesoura', lagarto: 'Lagarto', spock: 'Spock' };
+        const EMOJI_MAP = { pedra: '✊', papel: '✋', tesoura: '✌️', lagarto: '🦎', spock: '🖖' };
+        const GAME_MODE_NAMES = { free: 'Jogo Livre', bestOf3: 'Melhor de 3', bestOf5: 'Melhor de 5' };
+        const RULES = {
+            pedra: ['tesoura', 'lagarto'],
+            papel: ['pedra', 'spock'],
+            tesoura: ['papel', 'lagarto'],
+            lagarto: ['spock', 'papel'],
+            spock: ['tesoura', 'pedra']
+        };
+        const COUNTER_MOVES = {
+            pedra: 'papel',     
+            papel: 'tesoura',   
+            tesoura: 'spock',   
+            lagarto: 'pedra',   
+            spock: 'lagarto'    
+        };
+        const KEY_MAP = { 
+            '1': 'pedra',
+            '2': 'papel',
+            '3': 'tesoura',
+            '4': 'lagarto',
+            '5': 'spock'
+        };
+
+        /* * --- OBJETO PRINCIPAL DO JOGO (v35) ---
+         */
+        const JokenpoGame = {
+            // --- Propriedades de Estado ---
+            playerMoveHistory: [],
+            playerScore: 0,
+            computerScore: 0,
+            currentGameMode: 'free',
+            currentDifficulty: 'hard',
+            playerRoundWins: 0,
+            computerRoundWins: 0,
+            fullHistory: [], 
+            myMoveChart: null, 
+            isMuted: false, 
+            isAudioInitialized: false,
+            audioCtx: null,
+            saveTimeout: null, 
+            isSoundPlaying: false, 
+            isChartJsLoaded: false, 
+            isTransitioning: false, 
+            isMouseOverContainer: false,
+            tiltAnimationId: null,
+            noiseBuffer: null,
+            confirmAction: null,
+
+            // --- Propriedades de Seletor (DOM) ---
+            screens: {},
+            choiceButtons: null,
+            confirmModal: null,
+            confirmModalTitle: null,
+            confirmModalMessage: null,
+            confirmModalBtnYes: null,
+            confirmModalBtnNo: null,
+            confirmModalCloseBtn: null,
+            settingsModal: null,
+            settingsModalCloseBtn: null,
+            settingsBtn: null,
+            statsDifficultyFilter: null,
+
+
+            /**
+             * 1. Inicialização
+             */
+            init: function() {
+                this.bindSelectors();
+                this.bindEvents();
+                this.loadGameState();
+                this.createLiveRegion(); 
+                
+                const initialScreen = this.screens['menu'];
+                /* initialScreen.style.display = 'flex'; <-- v34-FIX: REMOVIDO */
+                requestAnimationFrame(() => {
+                    initialScreen.classList.add('active');
+                });
+            },
+
+            /**
+             * 2. Binders (Setup)
+             */
+            bindSelectors: function() {
+                this.screens = {
+                    menu: document.getElementById('menu-screen'),
+                    game: document.getElementById('game-screen')
+                };
+                this.choiceButtons = document.querySelectorAll('.choice-btn');
+                this.playerScoreEl = document.getElementById('player-score');
+                this.computerScoreEl = document.getElementById('computer-score');
+                this.playerRoundWinsEl = document.getElementById('player-round-wins');
+                this.computerRoundWinsEl = document.getElementById('computer-round-wins');
+                this.resultMessageEl = document.getElementById('result-message');
+                this.playerChoiceDisplayEl = document.getElementById('player-choice-display');
+                this.computerChoiceDisplayEl = document.getElementById('computer-choice-display');
+                this.playerChoiceContainer = document.getElementById('player-choice-pod'); 
+                this.computerChoiceContainer = document.getElementById('computer-choice-pod');
+                this.playBtn = document.getElementById('play-btn');
+                this.backToMenuBtn = document.getElementById('back-to-menu-btn');
+                this.resetBtn = document.getElementById('reset-btn');
+                this.rulesBtn = document.getElementById('rules-btn');
+                this.statsBtn = document.getElementById('stats-btn');
+                this.clearDataBtn = document.getElementById('clear-data-btn');
+                this.audioToggleBtn = document.getElementById('audio-toggle-btn'); 
+                this.exportDataBtn = document.getElementById('export-data-btn'); 
+                this.importDataBtn = document.getElementById('import-data-btn');
+                
+                this.rulesModal = document.getElementById('rules-modal');
+                this.rulesModalCloseBtn = document.getElementById('rules-modal-close');
+                this.statsModal = document.getElementById('stats-modal');
+                this.statsModalCloseBtn = document.getElementById('stats-modal-close');
+                this.statsGridContentEl = document.getElementById('stats-grid-content');
+                
+                this.themeToggle = document.getElementById('theme-toggle');
+                this.gameModeSelect = document.getElementById('game-mode-select');
+                this.difficultySelect = document.getElementById('difficulty-select'); 
+                this.historyLogEl = document.getElementById('history-log');
+                this.activeGameModeEl = document.getElementById('active-game-mode');
+
+                this.confirmModal = document.getElementById('confirm-modal');
+                this.confirmModalTitle = document.getElementById('confirm-modal-title');
+                this.confirmModalMessage = document.getElementById('confirm-modal-message');
+                this.confirmModalBtnYes = document.getElementById('confirm-modal-btn-yes');
+                this.confirmModalBtnNo = document.getElementById('confirm-modal-btn-no');
+                this.confirmModalCloseBtn = document.getElementById('confirm-modal-close-btn');
+
+                this.settingsModal = document.getElementById('settings-modal');
+                this.settingsModalCloseBtn = document.getElementById('settings-modal-close');
+                this.settingsBtn = document.getElementById('settings-btn');
+                
+                this.statsDifficultyFilter = document.getElementById('stats-difficulty-filter');
+            },
+
+            bindEvents: function() {
+                this.playBtn.addEventListener('click', () => {
+                    this.initAudio(); 
+                    this.playSound('draw'); 
+                    this.showScreen('game');
+                });
+                this.backToMenuBtn.addEventListener('click', () => {
+                    this.initAudio(); 
+                    this.playSound('draw'); 
+                    this.showScreen('menu');
+                });
+
+                this.choiceButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        this.initAudio(); 
+                        const playerChoice = button.dataset.choice;
+                        this.playRound(playerChoice, button); 
+                    });
+                });
+                this.gameModeSelect.addEventListener('change', (e) => this.onGameModeChange(e));
+                this.difficultySelect.addEventListener('change', (e) => this.onDifficultyChange(e));
+
+                this.audioToggleBtn.addEventListener('click', () => {
+                    this.initAudio(); 
+                    this.toggleMute();
+                });
+                
+                this.resetBtn.addEventListener('click', () => this.onResetClick());
+                this.clearDataBtn.addEventListener('click', () => this.onClearDataClick());
+                this.importDataBtn.addEventListener('click', () => this.importData());
+                this.exportDataBtn.addEventListener('click', () => this.exportData());
+                
+                this.themeToggle.addEventListener('change', () => {
+                    this.setTheme(this.themeToggle.checked ? 'light' : 'dark');
+                    this.saveGameStateDebounced(); 
+                });
+
+                this.rulesBtn.addEventListener('click', () => this.toggleModal(this.rulesModal, true));
+                this.rulesModalCloseBtn.addEventListener('click', () => this.toggleModal(this.rulesModal, false));
+                
+                this.statsBtn.addEventListener('click', () => {
+                    this.statsDifficultyFilter.value = 'all'; 
+                    this.toggleModal(this.statsModal, true);
+                    this.statsGridContentEl.innerHTML = `<p style="text-align: center; color: var(--text-color-muted); grid-column: 1 / -1;">Carregando estatísticas...</p>`;
+                    this.loadChartJs(() => {
+                        this.generateStats(); 
+                    });
+                });
+                this.statsModalCloseBtn.addEventListener('click', () => this.toggleModal(this.statsModal, false));
+                
+                this.statsDifficultyFilter.addEventListener('change', () => this.generateStats());
+
+                this.settingsBtn.addEventListener('click', () => this.toggleModal(this.settingsModal, true));
+                this.settingsModalCloseBtn.addEventListener('click', () => this.toggleModal(this.settingsModal, false));
+
+                this.confirmModalCloseBtn.addEventListener('click', () => this.toggleConfirmModal(false));
+                this.confirmModalBtnNo.addEventListener('click', () => this.toggleConfirmModal(false));
+                this.confirmModalBtnYes.addEventListener('click', () => {
+                    if (typeof this.confirmAction === 'function') {
+                        this.confirmAction();
+                    }
+                    this.toggleConfirmModal(false);
+                });
+
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.addEventListener('mousemove', (e) => this.onScreenMouseMove(e, screen));
+                    screen.addEventListener('mouseleave', () => this.onScreenMouseLeave());
+                });
+
+                window.addEventListener('keydown', (e) => this.onGlobalKeydown(e));
+                window.addEventListener('click', (e) => this.onGlobalClick(e));
+            },
+
+            /**
+             * 3. Lógica de Navegação e UI
+             */
+            // v34-FIX: Lógica de transição de tela drasticamente simplificada (inspirada no Damas)
+            showScreen: function(screenId) {
+                 if (this.isTransitioning) return;
+                const newScreen = this.screens[screenId];
+                const currentScreen = document.querySelector('.screen.active');
+                if (newScreen === currentScreen) return;
+                
+                this.isTransitioning = true;
+                
+                if (currentScreen) {
+                    currentScreen.classList.remove('active');
+                }
+                
+                newScreen.classList.add('active');
+                
+                // Trava a transição pelo tempo da animação
+                setTimeout(() => {
+                    this.isTransitioning = false;
+                }, CONFIG.transitionTime + 50); // Margem de segurança
+                
+                if (screenId === 'game') {
+                    this.updateRoundWinsUI();
+                    this.resultMessageEl.textContent = 'Faça sua jogada!';
+                    this.updateActiveModeUI(); 
+                    this.updateHistoryLogUI(); 
+                }
+                this.isMouseOverContainer = false; 
+            },
+
+            toggleModal: function(modal, show) {
+                if (!modal) return;
+                modal.style.display = show ? 'flex' : 'none';
+            },
+
+            toggleConfirmModal: function(show, title = '', message = '', onConfirm = null) {
+                if (show) {
+                    this.confirmModalTitle.textContent = title;
+                    this.confirmModalMessage.textContent = message;
+                    this.confirmAction = onConfirm; 
+                    this.toggleModal(this.confirmModal, true);
+                } else {
+                    this.toggleModal(this.confirmModal, false);
+                    this.confirmAction = null; 
+                }
+            },
+
+            loadChartJs: function(callback) {
+                if (this.isChartJsLoaded) {
+                    if (callback) callback();
+                    return;
+                }
+                const script = document.createElement('script');
+                script.src = "https://cdn.jsdelivr.net/npm/chart.js";
+                script.defer = true;
+                script.onload = () => { this.isChartJsLoaded = true; if (callback) callback(); };
+                script.onerror = () => { 
+                    console.error("Falha ao carregar Chart.js"); 
+                    this.isChartJsLoaded = false;
+                    if (callback) callback(); 
+                };
+                document.head.appendChild(script);
+            },
+            
+            setTheme: function(theme) {
+                if (theme === 'light') {
+                    document.body.classList.add('light-theme');
+                    this.themeToggle.checked = true;
+                } else {
+                    document.body.classList.remove('light-theme');
+                    this.themeToggle.checked = false;
+                }
+                this.updatePWAThemeColor(); 
+            },
+
+            updatePWAThemeColor: function() {
+                const isLightTheme = document.body.classList.contains('light-theme');
+                const newColor = isLightTheme ? '#f0f4f8' : '#1a1a2e'; 
+                const newBgColor = isLightTheme ? '#eef2f7' : '#161623'; 
+                
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', newColor);
+                
+                const manifest = {
+                    "name": "Jokenpo Pro",
+                    "short_name": "Jokenpo",
+                    "start_url": ".",
+                    "display": "standalone",
+                    "background_color": newBgColor, 
+                    "theme_color": newColor       
+                };
+                
+                try {
+                    const manifestString = JSON.stringify(manifest);
+                    const manifestLink = document.querySelector('link[rel="manifest"]');
+                    if (manifestLink) {
+                        manifestLink.setAttribute('href', 'data:application/json;base64,' + btoa(manifestString));
+                    }
+                } catch(e) {
+                    console.error("Erro ao atualizar o manifest dinâmico:", e);
+                }
+            },
+
+            initAudio: function() {
+                try {
+                    if (!this.isAudioInitialized && (window.AudioContext || window.webkitAudioContext)) {
+                        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        this.isAudioInitialized = true;
+                        this.createNoiseBuffer(); 
+                    }
+                    
+                    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+                        this.audioCtx.resume();
+                    }
+                } catch (e) { 
+                    console.error("Erro ao inicializar AudioContext:", e); 
+                    this.isAudioInitialized = false; 
+                }
+            },
+
+            playSound: function(type) {
+                if (!this.isAudioInitialized || this.isMuted || this.isSoundPlaying || !this.audioCtx) return; 
+                this.isSoundPlaying = true;
+                
+                const now = this.audioCtx.currentTime;
+                let soundSource; 
+                
+                if (type === 'win') {
+                    const oscillator = this.audioCtx.createOscillator();
+                    const gainNode = this.audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioCtx.destination);
+                    oscillator.type = 'triangle';
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    oscillator.frequency.setValueAtTime(400, now); 
+                    oscillator.frequency.exponentialRampToValueAtTime(1200, now + 0.1); 
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1); 
+                    soundSource = oscillator;
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.1);
+                } else if (type === 'bigWin') {
+                    const oscillator = this.audioCtx.createOscillator();
+                    const gainNode = this.audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioCtx.destination);
+                    oscillator.type = 'triangle';
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    oscillator.frequency.setValueAtTime(200, now); 
+                    oscillator.frequency.exponentialRampToValueAtTime(1400, now + 0.1); 
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.1);
+                    soundSource = oscillator; 
+                    if (this.noiseBuffer) {
+                        const noise = this.audioCtx.createBufferSource();
+                        noise.buffer = this.noiseBuffer;
+                        const noiseGain = this.audioCtx.createGain();
+                        noise.connect(noiseGain);
+                        noiseGain.connect(this.audioCtx.destination);
+                        noiseGain.gain.setValueAtTime(0.1, now); 
+                        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15); 
+                        noise.start(now);
+                        noise.stop(now + 0.15);
+                        soundSource = noise; 
+                    }
+                } else if (type === 'lose') {
+                    const oscillator = this.audioCtx.createOscillator();
+                    const gainNode = this.audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioCtx.destination);
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(200, now);
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    soundSource = oscillator;
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.15);
+                } else { 
+                    const oscillator = this.audioCtx.createOscillator();
+                    const gainNode = this.audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioCtx.destination);
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(400, now);
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    soundSource = oscillator;
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.15);
+                }
+                
+                if (soundSource) {
+                    soundSource.onended = () => { this.isSoundPlaying = false; };
+                } else {
+                    this.isSoundPlaying = false; 
+                }
+            },
+
+            createNoiseBuffer: function() {
+                if (!this.audioCtx) return;
+                const bufferSize = this.audioCtx.sampleRate * 0.15; 
+                this.noiseBuffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+                const output = this.noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1; 
+                }
+            },
+
+            vibrate: function(type) {
+                if (!('vibrate' in navigator)) return;
+                try {
+                    if (type === 'win') navigator.vibrate(100);
+                    else if (type === 'lose') navigator.vibrate([50, 50, 50]);
+                    else if (type === 'bigWin') navigator.vibrate([100, 50, 100, 50, 100]); 
+                } catch (e) { console.error("Erro ao vibrar:", e); }
+            },
+
+            launchConfetti: function(isBigWin = false) {
+                if (typeof confetti !== 'function') return; 
+                try {
+                    const particleCount = isBigWin ? CONFIG.confettiParticles.big : CONFIG.confettiParticles.normal;
+                    const spread = isBigWin ? 100 : 70;
+                    const isLightTheme = document.body.classList.contains('light-theme');
+                    const darkThemeColors = ['#00e5ff', '#00ff7f', '#ffffff'];
+                    const lightThemeColors = ['#007bff', '#28a745', '#333333'];
+                    const colors = isLightTheme ? lightThemeColors : darkThemeColors;
+                    const baseConfetti = { particleCount, spread, colors, zIndex: 9999 };
+                    
+                    if (isBigWin) {
+                        confetti({ ...baseConfetti, angle: 60, origin: { x: 0 } });
+                        confetti({ ...baseConfetti, angle: 120, origin: { x: 1 } });
+                    } else {
+                        confetti({ ...baseConfetti, origin: { y: 0.6 } });
+                    }
+                } catch (e) {
+                    console.error("Erro ao lançar confetes:", e);
+                }
+            },
+
+            toggleMute: function() {
+                this.isMuted = !this.isMuted;
+                this.audioToggleBtn.innerHTML = this.isMuted ? '🔇 Som Desligado' : '🔈 Som Ligado';
+                this.audioToggleBtn.setAttribute('aria-label', this.isMuted ? 'Ativar som' : 'Desativar som');
+                this.saveGameStateDebounced(); 
+            },
+
+            /**
+             * 4. Persistência (Importar/Exportar/Salvar)
+             */
+            safeLocalStorage: function(method, key, value = null) {
+                try {
+                    if (method === 'get') return localStorage.getItem(key);
+                    if (method === 'set') { localStorage.setItem(key, value); return true; }
+                    if (method === 'remove') { localStorage.removeItem(key); return true; }
+                } catch (error) {
+                    console.warn('LocalStorage não disponível:', error);
+                    return method === 'get' ? null : false;
+                }
+            },
+            
+            saveGameStateDebounced: function() {
+                clearTimeout(this.saveTimeout);
+                this.saveTimeout = setTimeout(() => this.saveGameState(), CONFIG.saveDebounceTime);
+            },
+            
+            saveGameState: function() {
+                const gameState = {
+                    score: { player: this.playerScore, computer: this.computerScore },
+                    mode: this.currentGameMode,
+                    difficulty: this.currentDifficulty,
+                    roundWins: { player: this.playerRoundWins, computer: this.computerRoundWins },
+                    fullHistory: this.fullHistory.slice(-CONFIG.maxHistorySize), 
+                    aiMemory: this.playerMoveHistory,
+                    theme: this.themeToggle.checked ? 'light' : 'dark',
+                    isMuted: this.isMuted
+                };
+                this.safeLocalStorage('set', 'jokenpoData', JSON.stringify(gameState));
+            },
+            
+            loadGameState: function(dataToLoad = null) {
+                let data = {};
+                if (dataToLoad) {
+                    data = dataToLoad;
+                } else {
+                    let dataString = this.safeLocalStorage('get', 'jokenpoData');
+                    if(dataString) {
+                        try { data = JSON.parse(dataString) || {}; } 
+                        catch (e) { console.error("Falha ao carregar dados salvos.", e); }
+                    }
+                }
+                
+                const score = data.score || {};
+                this.playerScore = score.player || 0;
+                this.computerScore = score.computer || 0;
+                const roundWins = data.roundWins || {};
+                this.playerRoundWins = roundWins.player || 0;
+                this.computerRoundWins = roundWins.computer || 0;
+                this.currentGameMode = data.mode || 'free';
+                this.gameModeSelect.value = this.currentGameMode;
+                this.currentDifficulty = data.difficulty || 'hard'; 
+                this.difficultySelect.value = this.currentDifficulty;
+                this.fullHistory = (data.fullHistory || []).slice(-CONFIG.maxHistorySize); 
+                this.playerMoveHistory = data.aiMemory || [];
+                this.setTheme(data.theme || 'dark');
+                this.isMuted = data.isMuted || false;
+                this.audioToggleBtn.innerHTML = this.isMuted ? '🔇 Som Desligado' : '🔈 Som Ligado';
+                
+                this.updateScoreUI();
+                this.updateHistoryLogUI(); 
+                this.updatePWAThemeColor(); 
+                this.updateActiveModeUI();
+                
+                if(dataToLoad) {
+                    this.saveGameState(); 
+                }
+            },
+            
+            exportData: function() {
+                try {
+                    this.saveGameState();
+                    const dataString = this.safeLocalStorage('get', 'jokenpoData');
+                    if (!dataString) {
+                        this.showMenuNotification('Não há dados para exportar.', true);
+                        return;
+                    }
+                    
+                    const blob = new Blob([dataString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const date = new Date().toISOString().split('T')[0];
+                    a.href = url;
+                    a.download = `jokenpo-pro-backup-${date}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    this.showMenuNotification('Dados exportados com sucesso!', false);
+                } catch (e) {
+                    console.error('Erro ao exportar dados:', e);
+                    this.showMenuNotification('Falha ao exportar dados.', true);
+                }
+            },
+            
+            importData: function() {
+                try {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json,application/json';
+                    
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            try {
+                                const parsedData = JSON.parse(event.target.result);
+                                if (typeof parsedData.score !== 'object' || (typeof parsedData.fullHistory !== 'object' && typeof parsedData.history !== 'object')) {
+                                    throw new Error('Arquivo inválido.');
+                                }
+                                
+                                this.toggleConfirmModal(true, 'Importar Dados', 'Tem certeza? Seus dados e estatísticas atuais serão sobrescritos.', () => {
+                                    this.loadGameState(parsedData);
+                                    this.showMenuNotification('Dados importados com sucesso!', false);
+                                });
+
+                            } catch (err) {
+                                console.error('Erro ao ler arquivo JSON:', err);
+                                this.showMenuNotification('Arquivo inválido ou corrompido.', true);
+                            }
+                        };
+                        reader.readAsText(file);
+                    };
+                    
+                    input.click();
+                } catch (e) {
+                    console.error('Erro ao importar dados:', e);
+                    this.showMenuNotification('Falha ao iniciar importação.', true);
+                }
+            },
+            
+            showMenuNotification: function(message, isError = false) {
+                let notification = document.getElementById('menu-notification');
+                if (notification) notification.remove(); 
+                
+                notification = document.createElement('div');
+                notification.id = 'menu-notification';
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed; top: 20px; left: 50%;
+                    transform: translateX(-50%); padding: 12px 20px;
+                    border-radius: 8px;
+                    background-color: ${isError ? 'var(--lose-color)' : 'var(--win-color)'};
+                    color: ${isError ? 'var(--text-color-strong)' : 'var(--bg-grad-start)'}; 
+                    font-weight: 600;
+                    z-index: 2000; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    transition: opacity 0.3s, top 0.3s; opacity: 0;
+                `;
+                document.body.appendChild(notification);
+                requestAnimationFrame(() => { notification.style.opacity = '1'; notification.style.top = '30px'; });
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.top = '20px';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000); 
+            },
+
+            /**
+             * 5. Acessibilidade
+             */
+            announceResult: function(message) {
+                if (this.liveRegion) {
+                    this.liveRegion.textContent = message;
+                }
+            },
+            
+            createLiveRegion: function() {
+                this.liveRegion = document.createElement('div');
+                this.liveRegion.setAttribute('role', 'status');
+                this.liveRegion.setAttribute('aria-live', 'assertive');
+                this.liveRegion.style.cssText = 'position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;';
+                document.body.appendChild(this.liveRegion);
+            },
+
+            /**
+             * 6. Lógica Principal do Jogo
+             */
+            onGameModeChange: function(e) {
+                this.currentGameMode = e.target.value;
+                this.resetRoundWins(true);
+                this.updateActiveModeUI();
+                this.saveGameStateDebounced();
+            },
+            
+            onDifficultyChange: function(e) {
+                this.currentDifficulty = e.target.value;
+                this.saveGameStateDebounced();
+            },
+            
+            playRound: function(playerChoice, clickedButton) {
+                if (this.isTransitioning) return; 
+                
+                this.toggleChoiceButtons(true); 
+                this.playerChoiceContainer.classList.remove('selected', 'win', 'lose', 'draw');
+                this.computerChoiceContainer.classList.remove('selected', 'win', 'lose', 'draw');
+                this.resultMessageEl.className = '';
+                
+                if(clickedButton) {
+                    clickedButton.classList.add('active-choice');
+                    setTimeout(() => clickedButton.classList.remove('active-choice'), 300);
+                }
+
+                this.computerChoiceDisplayEl.textContent = '❔';
+                this.computerChoiceContainer.classList.add('computer-thinking');
+
+                const reactionTime = CONFIG.aiBaseReaction + Math.random() * CONFIG.aiReactionVariance;
+                
+                setTimeout(() => {
+                    const computerChoice = this.getComputerChoice();
+                    const winner = this.getWinner(playerChoice, computerChoice);
+
+                    this.playerMoveHistory.push(playerChoice);
+                    if (this.playerMoveHistory.length > CONFIG.aiMemorySpan) {
+                        this.playerMoveHistory.shift(); 
+                    }
+                    
+                    this.fullHistory.push({ 
+                        player: playerChoice, 
+                        computer: computerChoice, 
+                        winner: winner,
+                        difficulty: this.currentDifficulty 
+                    });
+
+                    this.computerChoiceContainer.classList.remove('computer-thinking');
+                    this.updateUI(playerChoice, computerChoice, winner);
+                    
+                    this.playSound(winner === 'player' ? 'win' : (winner === 'computer' ? 'lose' : 'draw'));
+                    this.vibrate(winner === 'player' ? 'win' : 'lose');
+                    
+                    if (this.currentGameMode !== 'free') {
+                        this.checkGameWinner(); 
+                    } else {
+                        this.toggleChoiceButtons(false); 
+                    }
+                    
+                    this.saveGameStateDebounced(); 
+                    this.updateHistoryLogUI(); 
+                }, reactionTime); 
+            },
+            
+            getWinner: function(player, computer) {
+                if (player === computer) return 'draw';
+                if (RULES[player].includes(computer)) return 'player';
+                return 'computer';
+            },
+            
+            checkGameWinner: function() {
+                const winsNeeded = this.currentGameMode === 'bestOf3' ? 2 : 3;
+                let gameWinner = null;
+                let msg = ''; 
+
+                if (this.playerRoundWins === winsNeeded) {
+                    msg = `Você venceu a "Melhor de ${this.currentGameMode.slice(-1)}"!`;
+                    this.resultMessageEl.textContent = msg;
+                    this.resultMessageEl.className = 'win';
+                    this.resetRoundWins(false); 
+                    this.vibrate('bigWin'); 
+                    this.launchConfetti(true); 
+                    this.playSound('bigWin');
+                    gameWinner = 'player';
+                } else if (this.computerRoundWins === winsNeeded) {
+                    msg = `PC venceu a "Melhor de ${this.currentGameMode.slice(-1)}"!`;
+                    this.resultMessageEl.textContent = msg;
+                    this.resultMessageEl.className = 'lose';
+                    this.resetRoundWins(false); 
+                    gameWinner = 'computer';
+                } else {
+                    this.toggleChoiceButtons(false); 
+                }
+                
+                if (msg) this.announceResult(msg); 
+                
+                if (gameWinner === 'player') {
+                    this.screens.game.classList.add('flash-win');
+                    setTimeout(() => this.screens.game.classList.remove('flash-win'), 600);
+                } else if (gameWinner === 'computer') {
+                    this.screens.game.classList.add('flash-lose');
+                    setTimeout(() => this.screens.game.classList.remove('flash-lose'), 600);
+                }
+
+                if(gameWinner) {
+                    setTimeout(() => {
+                        this.toggleChoiceButtons(false);
+                        this.resultMessageEl.textContent = 'Jogue novamente!';
+                        this.resultMessageEl.className = '';
+                    }, 2500); 
+                }
+            },
+            
+            onResetClick: function() {
+                this.toggleConfirmModal(true, 'Resetar Scores', 'Tem certeza? As pontuações (total e da rodada) serão zeradas. O histórico será mantido.', () => {
+                    this.playerScore = 0;
+                    this.computerScore = 0;
+                    this.resetRoundWins(true);
+                    this.updateScoreUI();
+                    this.saveGameStateDebounced();
+                    this.showMenuNotification('Pontuações resetadas.', false);
+                });
+            },
+            
+            onClearDataClick: function() {
+                this.toggleConfirmModal(true, 'Limpar Dados', 'Tem certeza? Todo o seu histórico e pontuação serão apagados permanentemente.', () => {
+                    this.safeLocalStorage('remove', 'jokenpoData');
+                    this.resetGame(); 
+                    this.loadGameState({}); 
+                    this.showMenuNotification('Todos os dados foram apagados.', false);
+                });
+            },
+            
+            resetGame: function() {
+                this.playerScore = 0;
+                this.computerScore = 0;
+                this.playerMoveHistory = [];
+                this.fullHistory = [];
+                this.resetRoundWins(true);
+                this.updateScoreUI();
+                this.updateHistoryLogUI();
+                this.resultMessageEl.textContent = 'Faça sua jogada!';
+                this.resultMessageEl.className = '';
+                this.playerChoiceDisplayEl.textContent = '❔';
+                this.computerChoiceDisplayEl.textContent = '❔';
+                this.playerChoiceContainer.className = 'choice-pod';
+                this.computerChoiceContainer.className = 'choice-pod';
+            },
+
+            /**
+             * 7. Lógica da IA
+             */
+            getComputerChoice: function() {
+                switch(this.currentDifficulty) {
+                    case 'easy':
+                        return this.getAIChoice_Random();
+                    case 'medium':
+                        return this.getAIChoice_Reactive();
+                    case 'hard':
+                        return this.getAIChoice_Predictive();
+                    case 'expert':
+                        return this.getAIChoice_Advanced(); 
+                    default:
+                        return this.getAIChoice_Random();
+                }
+            },
+            
+            getAIChoice_Random: function() {
+                return CHOICES[Math.floor(Math.random() * CHOICES.length)];
+            },
+            
+            getAIChoice_Reactive: function() {
+                if (Math.random() < CONFIG.aiSmartChance && this.fullHistory.length > 0) {
+                    const lastPlayerMove = this.fullHistory[this.fullHistory.length - 1].player;
+                    if (Math.random() < CONFIG.aiMistakeChance) {
+                        return Object.keys(COUNTER_MOVES).find(key => COUNTER_MOVES[key] === lastPlayerMove);
+                    }
+                    return COUNTER_MOVES[lastPlayerMove];
+                }
+                return this.getAIChoice_Random();
+            },
+            
+            getAIChoice_Predictive: function() {
+                if (this.playerMoveHistory.length < CONFIG.aiMinLearnRounds) {
+                    return this.getAIChoice_Reactive(); 
+                }
+                
+                const moveCounts = {};
+                CHOICES.forEach(c => moveCounts[c] = 0);
+                this.playerMoveHistory.forEach(move => {
+                    moveCounts[move]++;
+                });
+                
+                const mostFrequentMove = Object.keys(moveCounts).reduce((a, b) => moveCounts[a] > moveCounts[b] ? a : b);
+                
+                if (Math.random() < CONFIG.aiSmartChance) {
+                    return COUNTER_MOVES[mostFrequentMove];
+                }
+                return this.getAIChoice_Reactive(); 
+            },
+            
+            getAIChoice_Advanced: function() {
+                if (this.playerMoveHistory.length < CONFIG.aiExpertMemory) {
+                    return this.getAIChoice_Predictive(); 
+                }
+
+                const lastMoves = this.playerMoveHistory.slice(-CONFIG.aiExpertStreak);
+                const isStreak = lastMoves.every(move => move === lastMoves[0]);
+                
+                if (isStreak && Math.random() > CONFIG.aiExpertMistakeChance) {
+                    if (Math.random() < 0.5) {
+                        return COUNTER_MOVES[lastMoves[0]]; 
+                    } else {
+                        const playersCounter = COUNTER_MOVES[lastMoves[0]];
+                        return COUNTER_MOVES[playersCounter];
+                    }
+                }
+
+                const last3 = this.playerMoveHistory.slice(-3);
+                if (last3[0] === 'pedra' && last3[1] === 'papel' && Math.random() > CONFIG.aiExpertMistakeChance) {
+                    return COUNTER_MOVES['tesoura']; 
+                }
+                
+                return this.getAIChoice_Predictive();
+            },
+
+
+            /**
+             * 8. Funções de Atualização de UI
+             */
+            updateUI: function(playerChoice, computerChoice, winner) {
+                this.playerChoiceDisplayEl.textContent = EMOJI_MAP[playerChoice];
+                this.computerChoiceDisplayEl.textContent = EMOJI_MAP[computerChoice];
+                this.playerChoiceContainer.classList.add('selected');
+                this.computerChoiceContainer.classList.add('selected');
+                
+                let msg = ''; 
+                if (winner === 'player') {
+                    msg = 'Você Venceu a Rodada!';
+                    this.resultMessageEl.classList.add('win');
+                    this.playerChoiceContainer.classList.add('win'); 
+                    this.computerChoiceContainer.classList.add('lose'); 
+                    this.playerScore++;
+                    if(this.currentGameMode !== 'free') this.playerRoundWins++;
+                    this.launchConfetti(false);
+                    this.pulseElement(this.playerScoreEl);
+                } else if (winner === 'computer') {
+                    msg = 'Você Perdeu a Rodada!';
+                    this.resultMessageEl.classList.add('lose');
+                    this.playerChoiceContainer.classList.add('lose');
+                    this.computerChoiceContainer.classList.add('win');
+                    this.computerScore++;
+                    if(this.currentGameMode !== 'free') this.computerRoundWins++;
+                    this.pulseElement(this.computerScoreEl);
+                } else {
+                    msg = 'Empate!';
+                    this.resultMessageEl.classList.add('draw');
+                    this.playerChoiceContainer.classList.add('draw');
+                    this.computerChoiceContainer.classList.add('draw');
+                }
+                this.resultMessageEl.textContent = msg;
+                this.announceResult(msg); 
+                this.updateScoreUI();
+                this.updateRoundWinsUI(); 
+            },
+            
+            pulseElement: function(element) {
+                element.classList.add('score-pulse');
+                element.addEventListener('animationend', () => {
+                    element.classList.remove('score-pulse');
+                }, { once: true });
+            },
+            
+            updateScoreUI: function() {
+                this.playerScoreEl.textContent = this.playerScore;
+                this.computerScoreEl.textContent = this.computerScore;
+            },
+            
+            updateActiveModeUI: function() {
+                this.activeGameModeEl.textContent = GAME_MODE_NAMES[this.currentGameMode];
+                if (this.currentGameMode === 'free') {
+                    this.playerRoundWinsEl.style.display = 'none';
+                    this.computerRoundWinsEl.style.display = 'none';
+                } else {
+                    this.playerRoundWinsEl.style.display = 'flex';
+                    this.computerRoundWinsEl.style.display = 'flex';
+                }
+            },
+            
+            updateRoundWinsUI: function() {
+                const winsNeeded = this.currentGameMode === 'bestOf3' ? 2 : (this.currentGameMode === 'bestOf5' ? 3 : 0);
+                if (winsNeeded === 0) return;
+
+                const createDots = (container, count, fill) => {
+                    container.innerHTML = '';
+                    for (let i = 0; i < count; i++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'round-win-dot';
+                        if (i < fill) {
+                            dot.classList.add(container === this.playerRoundWinsEl ? 'player' : 'computer', 'filled');
+                        }
+                        container.appendChild(dot);
+                    }
+                };
+                
+                createDots(this.playerRoundWinsEl, winsNeeded, this.playerRoundWins);
+                createDots(this.computerRoundWinsEl, winsNeeded, this.computerRoundWins);
+            },
+
+            updateHistoryLogUI: function() {
+                this.historyLogEl.innerHTML = '';
+                
+                const historyToShow = this.fullHistory.slice(-CONFIG.shortHistorySize); 
+
+                if (historyToShow.length === 0) {
+                    this.historyLogEl.innerHTML = '<p style="color: var(--text-color-muted); font-size: 0.85rem;">Nenhuma rodada jogada ainda.</p>';
+                    return;
+                }
+                
+                historyToShow.forEach((round, index) => {
+                    const p = document.createElement('p');
+                    const winner = round.winner;
+                    const playerEmoji = EMOJI_MAP[round.player];
+                    const computerEmoji = EMOJI_MAP[round.computer];
+                    
+                    let resultText = '';
+                    if (winner === 'player') {
+                        p.className = 'player';
+                        resultText = ' (Você)';
+                    } else if (winner === 'computer') {
+                        p.className = 'computer';
+                        resultText = ' (PC)';
+                    } else {
+                        p.className = 'draw';
+                        resultText = ' (Empate)';
+                    }
+                    
+                    const roundNumber = this.fullHistory.length - historyToShow.length + index + 1;
+                    p.innerHTML = `Rodada ${roundNumber}: ${playerEmoji} vs ${computerEmoji} ${resultText}`;
+                    this.historyLogEl.appendChild(p); 
+                });
+
+                this.historyLogEl.scrollTop = this.historyLogEl.scrollHeight;
+            },
+            
+            toggleChoiceButtons: function(disabled) {
+                this.choiceButtons.forEach(button => {
+                    button.disabled = disabled;
+                });
+            },
+            
+            resetRoundWins: function(shouldEnableButtons = true) {
+                this.playerRoundWins = 0;
+                this.computerRoundWins = 0;
+                this.updateRoundWinsUI();
+                if (shouldEnableButtons) {
+                    this.toggleChoiceButtons(false);
+                }
+            },
+            
+            /**
+             * 9. Lógica de Estatísticas e Tendências
+             */
+            generateStats: function() {
+                if (!this.statsGridContentEl) return;
+                
+                const difficultyFilter = this.statsDifficultyFilter.value;
+                const historyToAnalyze = (difficultyFilter === 'all')
+                    ? this.fullHistory
+                    : this.fullHistory.filter(r => r.difficulty === difficultyFilter);
+
+                const totalGames = historyToAnalyze.length;
+                
+                if (totalGames < CONFIG.statsMinRounds) {
+                    const filterName = this.statsDifficultyFilter.options[this.statsDifficultyFilter.selectedIndex].text;
+                    const message = (difficultyFilter === 'all')
+                        ? `Jogue pelo menos ${CONFIG.statsMinRounds} rodadas para ver as estatísticas.`
+                        : `Jogue pelo menos ${CONFIG.statsMinRounds} rodadas no nível "${filterName}" para ver as estatísticas.`;
+                    this.statsGridContentEl.innerHTML = `<p class="full-width" style="text-align: center; color: var(--text-color-muted); grid-column: 1 / -1;">${message}</p>`;
+                    return;
+                }
+
+                const wins = historyToAnalyze.filter(r => r.winner === 'player').length;
+                const losses = historyToAnalyze.filter(r => r.winner === 'computer').length;
+                const draws = totalGames - wins - losses;
+                const winRate = totalGames > 0 ? (wins / totalGames * 100).toFixed(1) : 0;
+                
+                const moveCounts = { pedra: 0, papel: 0, tesoura: 0, lagarto: 0, spock: 0 };
+                historyToAnalyze.forEach(r => moveCounts[r.player]++);
+                
+                const mostUsedMove = Object.keys(moveCounts).reduce((a, b) => moveCounts[a] > moveCounts[b] ? a : b);
+                
+                this.statsGridContentEl.innerHTML = `
+                    <div class="stat-item full-width">
+                        <h3>Taxa de Vitória</h3>
+                        <p>${winRate}% <span>${EMOJI_MAP[mostUsedMove] || ''}</span></p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Vitórias</h3>
+                        <p style="color: var(--win-color);">${wins}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Derrotas</h3>
+                        <p style="color: var(--lose-color);">${losses}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Empates</h3>
+                        <p>${draws}</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Total</h3>
+                        <p>${totalGames}</p>
+                    </div>
+                    <div class="stat-item full-width">
+                        <h3>Suas Jogadas</h3>
+                        <ul>
+                            ${CHOICES.map(choice => `
+                                <li>
+                                    <span>${EMOJI_MAP[choice]} ${CHOICE_NAMES[choice]}</span> 
+                                    <span class="stat-percent">${(moveCounts[choice] / totalGames * 100).toFixed(0)}%</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="chart-container" id="my-moves-chart-container">
+                            <!-- O Canvas será inserido aqui -->
+                        </div>
+                    </div>
+                    <div class="stat-item full-width">
+                        <h3>Análise Tática</h3>
+                        <div id="trend-analysis-content">
+                            <p style="color: var(--text-color-muted); font-size: 0.9rem;">Analisando tendências...</p>
+                        </div>
+                    </div>
+                `;
+                
+                const chartContainer = document.getElementById('my-moves-chart-container');
+                
+                if (this.isChartJsLoaded) {
+                    chartContainer.innerHTML = '<canvas id="my-moves-chart"></canvas>';
+                    this.renderMoveChart(moveCounts);
+                } else {
+                    chartContainer.innerHTML = '<p style="font-size: 0.9rem; color: var(--text-color-muted);">Não foi possível carregar o gráfico.</p>';
+                }
+                // v37-FIX: Chamada de função atualizada
+                this.renderTacticalAnalysis(historyToAnalyze); 
+            },
+            
+            getChartColors: function(isLightTheme) {
+                const opacity = '0.7';
+                if (isLightTheme) {
+                    return [
+                        `rgba(0, 123, 255, ${opacity})`, 
+                        `rgba(0, 123, 255, ${opacity})`, 
+                        `rgba(0, 123, 255, ${opacity})`, 
+                        `rgba(40, 167, 69, ${opacity})`, 
+                        `rgba(0, 86, 179, ${opacity})`   
+                    ];
+                } else {
+                    return [
+                        `rgba(0, 229, 255, ${opacity})`, 
+                        `rgba(0, 229, 255, ${opacity})`, 
+                        `rgba(0, 229, 255, ${opacity})`, 
+                        `rgba(0, 255, 127, ${opacity})`, 
+                        `rgba(77, 148, 255, ${opacity})`  
+                    ];
+                }
+            },
+            
+            renderMoveChart: function(moveCounts) {
+                const chartEl = document.getElementById('my-moves-chart');
+                if (!chartEl || !window.Chart) {
+                    return; 
+                }
+                
+                const ctx = chartEl.getContext('2d');
+                if (this.myMoveChart) {
+                    this.myMoveChart.destroy();
+                }
+                
+                const isLightTheme = document.body.classList.contains('light-theme');
+                const chartColors = this.getChartColors(isLightTheme);
+                
+                this.myMoveChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: CHOICES.map(c => CHOICE_NAMES[c]),
+                        datasets: [{
+                            data: CHOICES.map(c => moveCounts[c]),
+                            backgroundColor: chartColors,
+                            borderColor: varGet('--card-color'),
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: varGet('--text-color-muted'),
+                                    font: { family: "'Inter', sans-serif" }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                function varGet(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+            },
+            
+            // v37-FIX: Lógica de análise de tendências completamente substituída
+            analyzeTactics: function(historyToAnalyze) {
+                if (historyToAnalyze.length < CONFIG.statsMinRounds) return null;
+
+                const moveCounts = { pedra: 0, papel: 0, tesoura: 0, lagarto: 0, spock: 0 };
+                const moveWins = { ...moveCounts };
+                const computerMoveDefeats = { ...moveCounts };
+
+                for (const round of historyToAnalyze) {
+                    const playerMove = round.player;
+                    const computerMove = round.computer;
+                    
+                    moveCounts[playerMove]++; // Conta a jogada do jogador
+
+                    if (round.winner === 'player') {
+                        moveWins[playerMove]++; // Registra a vitória para essa jogada
+                    } else if (round.winner === 'computer') {
+                        computerMoveDefeats[computerMove]++; // Registra qual jogada do PC venceu
+                    }
+                }
+
+                // 1. Jogada Favorita (mais usada)
+                const favoriteMove = Object.keys(moveCounts).reduce((a, b) => moveCounts[a] > moveCounts[b] ? a : b);
+
+                // 2. Melhor Jogada (maior taxa de vitória, com mínimo de 4 jogadas)
+                let bestMove = 'N/A';
+                let bestWinRate = -1;
+                for (const move of CHOICES) {
+                    const plays = moveCounts[move];
+                    const wins = moveWins[move];
+                    // Só considera se jogou pelo menos 4 vezes com essa escolha
+                    if (plays > 3) { 
+                        const rate = wins / plays;
+                        if (rate > bestWinRate) {
+                            bestWinRate = rate;
+                            bestMove = move;
+                        }
+                    }
+                }
+                
+                // 3. Nêmesis (jogada do PC que mais te venceu)
+                let nemesisMove = Object.keys(computerMoveDefeats).reduce((a, b) => computerMoveDefeats[a] > computerMoveDefeats[b] ? a : b);
+                const nemesisDefeats = computerMoveDefeats[nemesisMove];
+
+                // Só mostra se o nêmesis te venceu pelo menos 3 vezes
+                if (nemesisDefeats < 3) {
+                   nemesisMove = 'N/A'; 
+                }
+
+                return { favoriteMove, bestMove, nemesisMove };
+            },
+            
+            // v37-FIX: Renderização da análise tática atualizada
+            // v39-FIX: Re-adiciona ícones (agora seguros com o novo CSS)
+            renderTacticalAnalysis: function(historyToAnalyze) {
+                const container = document.getElementById('trend-analysis-content');
+                if (!container) return;
+                
+                const tactics = this.analyzeTactics(historyToAnalyze);
+                if (!tactics) {
+                    container.innerHTML = `<p style="color: var(--text-color-muted); font-size: 0.9rem;">Jogue mais para ver as tendências.</p>`;
+                    return;
+                }
+
+                const { favoriteMove, bestMove, nemesisMove } = tactics;
+                let html = '<ul class="trend-list">';
+                
+                if (favoriteMove) {
+                    // v39-FIX: Ícones re-adicionados com a classe e CSS do usuário
+                    html += `<li class="trend-item"><span class="emoji">🎯</span> Sua jogada favorita é <strong>${CHOICE_NAMES[favoriteMove]}</strong>.</li>`;
+                }
+                if (bestMove !== 'N/A') {
+                    // v39-FIX: Ícones re-adicionados com a classe e CSS do usuário
+                    html += `<li class="trend-item"><span class="emoji">🏆</span> Sua "arma secreta" é <strong>${CHOICE_NAMES[bestMove]}</strong>. (Maior % de vitória)</li>`;
+                }
+                if (nemesisMove !== 'N/A') {
+                    // v39-FIX: Ícones re-adicionados com a classe e CSS do usuário
+                    html += `<li class="trend-item"><span class="emoji">💥</span> Seu "Nêmesis" é <strong>${CHOICE_NAMES[nemesisMove]}</strong>. (A jogada do PC que mais te venceu)</li>`;
+                }
+                
+                if (bestMove === 'N/A' && nemesisMove === 'N/A' && favoriteMove) {
+                    html += '<li class="trend-item" style="color: var(--text-color-muted); font-size: 0.9rem;">Jogue mais para definirmos sua arma secreta e seu nêmesis.</li>';
+                }
+                
+                html += '</ul>';
+                container.innerHTML = html;
+            },
+
+
+            /**
+             * 10. Handlers de Eventos Globais
+             */
+            onGlobalKeydown: function(event) {
+                if (this.screens.game.classList.contains('active') && !this.isTransitioning) {
+                    const choice = KEY_MAP[event.key];
+                    if (choice && !this.choiceButtons[0].disabled) {
+                        const button = document.querySelector(`.choice-btn[data-choice="${choice}"]`);
+                        if (button) {
+                            this.initAudio();
+                            this.playRound(choice, button);
+                        }
+                    }
+                }
+                
+                if (event.key === 'Escape') {
+                    this.toggleModal(this.rulesModal, false);
+                    this.toggleModal(this.statsModal, false);
+                    this.toggleModal(this.confirmModal, false);
+                    this.toggleModal(this.settingsModal, false);
+                }
+            },
+            
+            onGlobalClick: function(event) {
+                if (event.target.classList.contains('modal-overlay')) {
+                    this.toggleModal(event.target, false);
+                }
+            },
+            
+            onScreenMouseMove: function(e, screen) {
+                // v33-FIX: Desativa tilt em telas pequenas para performance
+                if (window.innerWidth < 600) return; 
+
+                if (!this.isMouseOverContainer) {
+                    this.isMouseOverContainer = true;
+                    if (!this.tiltAnimationId) {
+                        this.updateTilt(); 
+                    }
+                }
+                const rect = screen.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const { width, height } = rect;
+                
+                this.targetRotateX = (y - height / 2) / (height / 2) * -CONFIG.tiltIntensity;
+                this.targetRotateY = (x - width / 2) / (width / 2) * CONFIG.tiltIntensity;
+            },
+            
+            onScreenMouseLeave: function() {
+                this.isMouseOverContainer = false;
+            },
+            
+            updateTilt: function() {
+                if (!this.isMouseOverContainer) {
+                    this.targetRotateX = 0;
+                    this.targetRotateY = 0;
+                }
+                
+                this.currentRotateX = (this.currentRotateX || 0) + (this.targetRotateX - (this.currentRotateX || 0)) * CONFIG.lerpFactor;
+                this.currentRotateY = (this.currentRotateY || 0) + (this.targetRotateY - (this.currentRotateY || 0)) * CONFIG.lerpFactor;
+                
+                const activeScreen = document.querySelector('.screen.active');
+                if (activeScreen) {
+                    // v34-FIX: Combina centralização, tilt e scale(1) (estado ativo)
+                    activeScreen.style.transform = `translate(-50%, -50%) scale(1) rotateX(${this.currentRotateX}deg) rotateY(${this.currentRotateY}deg)`;
+                }
+                
+                const isIdle = !this.isMouseOverContainer && Math.abs(this.currentRotateX) < 0.01 && Math.abs(this.currentRotateY) < 0.01;
+                
+                if (isIdle) {
+                    // v34-FIX: Reseta para o transform de centralização padrão
+                    if (activeScreen) activeScreen.style.transform = 'translate(-50%, -50%) scale(1) rotateX(0deg) rotateY(0deg)';
+                    this.tiltAnimationId = null; 
+                } else {
+                    this.tiltAnimationId = requestAnimationFrame(() => this.updateTilt()); 
+                }
+            }
+        };
+
+        // --- Inicialização do Jogo ---
+        document.addEventListener('DOMContentLoaded', () => {
+            JokenpoGame.init();
+        });
+
+    </script>
+</body>
+</html>
