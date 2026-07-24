@@ -1,10 +1,12 @@
-const CACHE_NAME = 'jokenpo-pro-v54';
+const CACHE_NAME = 'jokenpo-pro-v55';
 const APP_SHELL = [
   './',
   './index.html',
   './game.html',
   './styles.css',
+  './mobile-settings.css',
   './app.js',
+  './mobile-settings.js',
   './core.js',
   './effects.js',
   './manifest.webmanifest',
