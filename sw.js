@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jokenpo-pro-v55';
+const CACHE_NAME = 'jokenpo-pro-v56';
 const APP_SHELL = [
   './',
   './index.html',
