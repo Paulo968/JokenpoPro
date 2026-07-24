@@ -1,0 +1,98 @@
+.mobile-settings-card {
+  display: none;
+}
+
+.mobile-settings-dialog {
+  width: min(520px, calc(100vw - 24px));
+}
+
+.mobile-settings-dialog .settings-list {
+  overflow: visible;
+  padding-right: 0;
+}
+
+.mobile-settings-dialog .dialog-body {
+  padding-bottom: 8px;
+}
+
+.mobile-settings-dialog .dialog-actions {
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.mobile-credits {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.mobile-credits a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .desktop-settings-panel {
+    display: none;
+  }
+
+  .menu-actions {
+    min-height: 0;
+    grid-template-rows: none;
+    grid-auto-rows: minmax(88px, auto);
+  }
+
+  .mobile-settings-card {
+    display: flex;
+    grid-column: 1 / -1;
+    min-height: 88px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+  }
+
+  .mobile-settings-card .icon {
+    flex: 0 0 auto;
+    font-size: 2.35rem;
+  }
+
+  .menu-footer {
+    display: none;
+  }
+
+  .mobile-settings-dialog .setting-row {
+    grid-template-columns: 1fr minmax(108px, 42%);
+  }
+
+  .mobile-settings-dialog .dialog-actions {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 370px) {
+  .mobile-settings-card {
+    min-height: 72px;
+  }
+
+  .mobile-settings-dialog .setting-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .mobile-settings-dialog .switch {
+    justify-self: start;
+  }
+
+  .mobile-settings-dialog .dialog-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .mobile-settings-dialog .action-button {
+    width: 100%;
+  }
+}

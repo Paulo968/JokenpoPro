@@ -14,6 +14,7 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.svg">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./mobile-settings.css">
 </head>
 <body>
   <main class="app-shell" id="app-shell">
@@ -40,9 +41,12 @@
           <button class="menu-card" id="reset-button" type="button">
             <span class="icon">🔄</span><span><strong>Resetar</strong><small>Zere a pontuação ou apague todo o histórico.</small></span>
           </button>
+          <button class="menu-card mobile-settings-card" id="mobile-settings-button" type="button">
+            <span class="icon">⚙️</span><span><strong>Configurações rápidas</strong><small>Ajuste modo, dificuldade, tema, som e instalação.</small></span>
+          </button>
         </div>
 
-        <aside class="settings-panel" aria-labelledby="settings-title">
+        <aside class="settings-panel desktop-settings-panel" aria-labelledby="settings-title">
           <h2 class="panel-title" id="settings-title">⚙️ Configurações rápidas</h2>
           <div class="settings-list">
             <label class="setting-row">
@@ -132,6 +136,52 @@
     </section>
   </main>
 
+  <dialog class="mobile-settings-dialog" id="mobile-settings-dialog" aria-labelledby="mobile-settings-title">
+    <div class="dialog-inner">
+      <header class="dialog-header"><h2 id="mobile-settings-title">⚙️ Configurações rápidas</h2><button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button></header>
+      <div class="dialog-body">
+        <div class="settings-list">
+          <label class="setting-row">
+            <span class="setting-label"><strong>Modo</strong><small>Partida livre ou melhor de rodadas.</small></span>
+            <select id="mobile-mode-select">
+              <option value="free">Livre</option>
+              <option value="bestOf3">Melhor de 3</option>
+              <option value="bestOf5">Melhor de 5</option>
+            </select>
+          </label>
+          <label class="setting-row">
+            <span class="setting-label"><strong>Dificuldade</strong><small>A IA ajusta a estratégia conforme o nível.</small></span>
+            <select id="mobile-difficulty-select">
+              <option value="easy">Fácil</option>
+              <option value="medium">Médio</option>
+              <option value="hard">Difícil</option>
+              <option value="expert">Perito</option>
+            </select>
+          </label>
+          <div class="setting-row">
+            <span class="setting-label"><strong>Tema claro</strong><small>Troca as cores sem perder o progresso.</small></span>
+            <label class="switch"><input id="mobile-theme-toggle" type="checkbox" aria-label="Ativar tema claro"><span></span></label>
+          </div>
+          <div class="setting-row">
+            <span class="setting-label"><strong>Som</strong><small>Ative ou silencie os efeitos do jogo.</small></span>
+            <button class="soft-button" id="mobile-sound-button" type="button" aria-pressed="false">🔈 Ligado</button>
+          </div>
+          <div class="setting-row" id="mobile-install-row" hidden>
+            <span class="setting-label"><strong>Instalar</strong><small>Use como aplicativo e jogue offline.</small></span>
+            <button class="soft-button" id="mobile-install-button" type="button">Instalar app</button>
+          </div>
+        </div>
+      </div>
+      <footer class="dialog-actions">
+        <div class="mobile-credits">
+          <span>Desenvolvido por <strong>Paulo Zaqueu</strong></span>
+          <a href="https://github.com/Paulo968/JokenpoPro" target="_blank" rel="noreferrer">Ver código no GitHub</a>
+        </div>
+        <button class="action-button primary" data-close-dialog type="button">Concluído</button>
+      </footer>
+    </div>
+  </dialog>
+
   <dialog id="rules-dialog">
     <div class="dialog-inner">
       <header class="dialog-header"><h2>Regras do jogo</h2><button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button></header>
@@ -178,5 +228,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script type="module" src="./app.js"></script>
+  <script type="module" src="./mobile-settings.js"></script>
 </body>
 </html>
