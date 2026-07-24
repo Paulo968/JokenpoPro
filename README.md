@@ -6,78 +6,107 @@
 
 [![Jogar agora](https://img.shields.io/badge/Jogar-agora-7C3AED?style=for-the-badge)](https://paulo968.github.io/JokenpoPro/)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
-![Chart.js](https://img.shields.io/badge/Chart.js-Estatísticas-FF6384?style=flat-square&logo=chartdotjs&logoColor=white)
+![Responsivo](https://img.shields.io/badge/Layout-PC%20%2B%20Mobile-24D9F2?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-Offline-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
 
 </div>
 
 ## Sobre o projeto
 
-O Jokenpo Pro expande o jogo clássico com cinco opções de jogada e diferentes níveis de dificuldade. A aplicação observa o comportamento do jogador, identifica padrões simples e ajusta sua estratégia conforme o nível selecionado.
+O Jokenpo Pro expande o jogo clássico com cinco opções de jogada, quatro níveis de inteligência, modos de série, estatísticas e instalação como aplicativo.
 
-Além da lógica do jogo, o projeto explora experiência de usuário, persistência local, visualização de dados e funcionamento offline.
+A versão atual foi reconstruída para funcionar de forma consistente em computadores, tablets e celulares. O documento principal não cria rolagem horizontal ou vertical fantasma; quando uma tela pequena não comporta todo o conteúdo, apenas a área interna necessária recebe rolagem controlada.
+
+## Principais funcionalidades
+
+- Pedra, Papel, Tesoura, Lagarto e Spock;
+- jogo livre, melhor de 3 e melhor de 5;
+- quatro níveis de dificuldade;
+- IA adaptativa com frequência, transições e sequências;
+- placar e histórico persistidos no navegador;
+- estatísticas filtradas por dificuldade;
+- análise de jogada favorita, eficiência e nêmesis;
+- temas claro e escuro;
+- sons, vibração e animações sem bibliotecas externas;
+- atalhos numéricos de `1` a `5`;
+- interface acessível por teclado e leitores de tela;
+- manifest e Service Worker para instalação e uso offline.
 
 ## Como a inteligência evolui
 
 ```mermaid
 flowchart LR
-    A[Jogada do usuário] --> B[Histórico local]
+    A[Jogada do usuário] --> B[Memória local]
     B --> C{Nível selecionado}
     C -->|Fácil| D[Escolha aleatória]
     C -->|Médio| E[Reação à última jogada]
-    C -->|Difícil| F[Análise de frequência]
-    C -->|Perito| G[Busca por sequências]
-    D --> H[Jogada da IA]
+    C -->|Difícil| F[Frequência e transições]
+    C -->|Perito| G[Sequências de até três jogadas]
+    D --> H[Escolha da IA]
     E --> H
     F --> H
     G --> H
-    H --> I[Estatísticas e gráficos]
+    H --> I[Resultado, histórico e estatísticas]
 ```
-
-## Funcionalidades
-
-- Cinco opções de jogada: Pedra, Papel, Tesoura, Lagarto e Spock;
-- quatro níveis de dificuldade;
-- inteligência adaptativa baseada no histórico recente;
-- estatísticas e gráficos com Chart.js;
-- histórico de partidas e taxa de vitória;
-- efeitos sonoros e animações de vitória;
-- temas claro e escuro;
-- atalhos de teclado;
-- exportação e importação do progresso em JSON;
-- suporte a PWA e funcionamento offline.
 
 ## Níveis de dificuldade
 
 | Nível | Estratégia |
 |---|---|
 | Fácil | Escolhas aleatórias |
-| Médio | Reage à última jogada do usuário |
-| Difícil | Analisa as escolhas mais frequentes |
-| Perito | Procura sequências e padrões recorrentes |
+| Médio | Reage à última jogada, mas ainda comete erros |
+| Difícil | Analisa frequência e transições entre jogadas |
+| Perito | Procura sequências de até três movimentos e combina modelos de previsão |
 
-## Tecnologias
+## Responsividade
 
-`HTML5` · `CSS3` · `JavaScript ES6+` · `Chart.js` · `Canvas Confetti` · `Service Worker` · `PWA`
+O layout foi validado nos seguintes tamanhos de tela:
 
-## Estrutura
+- `1920 × 1080`;
+- `1366 × 768`;
+- `1024 × 768`;
+- `844 × 390` em orientação horizontal;
+- `375 × 667`;
+- `320 × 568`.
+
+A página mantém `html` e `body` presos à área visível para evitar scroll fantasma. Em telas menores, menu, jogo, histórico e modais usam rolagem interna apenas quando necessário.
+
+## Arquitetura
 
 ```text
 JokenpoPro/
-├── assets/
-├── index.html
+├── index.html              # Entrada pública e redirecionamento compatível
+├── game.html               # Estrutura semântica da aplicação
+├── styles.css              # Layout, temas e responsividade
+├── app.js                  # Estado, interface e fluxo das partidas
+├── core.js                 # Regras, migração de dados e motor da IA
+├── effects.js              # Sons, vibração e confetes
+├── manifest.webmanifest    # Instalação como PWA
+├── sw.js                   # Cache e funcionamento offline
+├── icon.svg
 ├── README.md
 └── LICENSE
 ```
+
+A separação reduz o antigo arquivo único e facilita manutenção, testes e evolução.
+
+## Tecnologias
+
+`HTML5` · `CSS3` · `JavaScript ES6 Modules` · `Web Audio API` · `LocalStorage` · `Service Worker` · `PWA`
+
+O jogo não depende de frameworks ou bibliotecas JavaScript externas para funcionar.
 
 ## Executando localmente
 
 ```bash
 git clone https://github.com/Paulo968/JokenpoPro.git
 cd JokenpoPro
+python -m http.server 8000
 ```
 
-Depois, abra o arquivo `index.html` no navegador. Para testar corretamente os recursos de PWA, utilize um servidor local, como a extensão Live Server do VS Code.
+Depois acesse `http://localhost:8000`.
+
+O servidor local é necessário para testar módulos JavaScript, Service Worker e recursos de PWA corretamente.
 
 ## Autor
 
