@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111426">
+  <meta name="description" content="Jokenpo Pro: Pedra, Papel, Tesoura, Lagarto e Spock com quatro níveis de inteligência, estatísticas e funcionamento offline.">
+  <meta name="author" content="Paulo Zaqueu">
+  <meta name="color-scheme" content="dark light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Jokenpo Pro</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app-shell" id="app-shell">
+    <section class="screen active" id="menu-screen" aria-labelledby="app-title">
+      <header class="brand-row">
+        <div class="brand">
+          <h1 id="app-title">🕹️ Jokenpo Pro</h1>
+          <p>Pedra, Papel, Tesoura, Lagarto e Spock com IA adaptativa.</p>
+        </div>
+        <span class="status-chip" id="connection-chip"><span class="status-dot" id="connection-dot"></span><span id="connection-text">Online</span></span>
+      </header>
+
+      <div class="menu-layout">
+        <div class="menu-actions" aria-label="Menu principal">
+          <button class="menu-card primary" id="play-button" type="button">
+            <span class="icon">▶️</span><span><strong>Jogar</strong><small>Comece uma partida com as configurações atuais.</small></span>
+          </button>
+          <button class="menu-card" id="stats-button" type="button">
+            <span class="icon">📊</span><span><strong>Estatísticas</strong><small>Veja desempenho, tendências e jogadas mais usadas.</small></span>
+          </button>
+          <button class="menu-card" id="rules-button" type="button">
+            <span class="icon">📜</span><span><strong>Regras</strong><small>Consulte quem vence quem em poucos segundos.</small></span>
+          </button>
+          <button class="menu-card" id="reset-button" type="button">
+            <span class="icon">🔄</span><span><strong>Resetar</strong><small>Zere a pontuação ou apague todo o histórico.</small></span>
+          </button>
+        </div>
+
+        <aside class="settings-panel" aria-labelledby="settings-title">
+          <h2 class="panel-title" id="settings-title">⚙️ Configurações rápidas</h2>
+          <div class="settings-list">
+            <label class="setting-row">
+              <span class="setting-label"><strong>Modo</strong><small>Partida livre ou melhor de rodadas.</small></span>
+              <select id="mode-select">
+                <option value="free">Livre</option>
+                <option value="bestOf3">Melhor de 3</option>
+                <option value="bestOf5">Melhor de 5</option>
+              </select>
+            </label>
+            <label class="setting-row">
+              <span class="setting-label"><strong>Dificuldade</strong><small id="difficulty-menu-description">Prevê padrões e frequências recentes.</small></span>
+              <select id="difficulty-select">
+                <option value="easy">Fácil</option>
+                <option value="medium">Médio</option>
+                <option value="hard">Difícil</option>
+                <option value="expert">Perito</option>
+              </select>
+            </label>
+            <div class="setting-row">
+              <span class="setting-label"><strong>Tema claro</strong><small>Troca as cores sem perder o progresso.</small></span>
+              <label class="switch"><input id="theme-toggle" type="checkbox" aria-label="Ativar tema claro"><span></span></label>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label"><strong>Som</strong><small>Efeitos leves gerados pelo navegador.</small></span>
+              <button class="soft-button" id="sound-button" type="button" aria-pressed="false">🔈 Ligado</button>
+            </div>
+            <div class="setting-row" id="install-row" hidden>
+              <span class="setting-label"><strong>Instalar</strong><small>Use como aplicativo e jogue offline.</small></span>
+              <button class="soft-button" id="install-button" type="button">Instalar app</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="menu-footer">
+        <span>Desenvolvido por <strong>Paulo Zaqueu</strong></span>
+        <a href="https://github.com/Paulo968/JokenpoPro" target="_blank" rel="noreferrer">Ver código no GitHub</a>
+      </footer>
+    </section>
+
+    <section class="screen" id="game-screen" aria-labelledby="game-title">
+      <header class="game-topbar">
+        <button class="back-button" id="back-button" type="button">← Menu</button>
+        <span class="mode-chip" id="game-title">Jogo Livre · Difícil</span>
+      </header>
+
+      <div class="game-layout">
+        <div class="arena-panel">
+          <div class="scoreboard" aria-label="Placar">
+            <div class="score-box"><span>Você</span><span class="score-value" id="player-score">0</span><div class="round-dots" id="player-round-dots"></div></div>
+            <span class="score-divider">×</span>
+            <div class="score-box"><span>PC</span><span class="score-value" id="computer-score">0</span><div class="round-dots" id="computer-round-dots"></div></div>
+          </div>
+
+          <div class="battle-zone">
+            <p class="result-message" id="result-message" aria-live="assertive">Faça sua jogada!</p>
+            <div class="duel">
+              <div class="choice-pod" id="player-pod"><span class="choice-emoji" id="player-choice">❔</span><small>Você</small></div>
+              <span class="versus">VS</span>
+              <div class="choice-pod" id="computer-pod"><span class="choice-emoji" id="computer-choice">❔</span><small>PC</small></div>
+            </div>
+            <p class="difficulty-description" id="difficulty-game-description">A IA analisa frequências e transições entre suas jogadas.</p>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <section class="panel choices-panel" aria-labelledby="choice-title">
+            <h2 class="panel-title" id="choice-title">Escolha sua jogada</h2>
+            <div class="choice-buttons">
+              <button class="choice-button" type="button" data-choice="pedra" aria-label="Pedra. Vence Tesoura e Lagarto">✊</button>
+              <button class="choice-button" type="button" data-choice="papel" aria-label="Papel. Vence Pedra e Spock">✋</button>
+              <button class="choice-button" type="button" data-choice="tesoura" aria-label="Tesoura. Vence Papel e Lagarto">✌️</button>
+              <button class="choice-button" type="button" data-choice="lagarto" aria-label="Lagarto. Vence Spock e Papel">🦎</button>
+              <button class="choice-button" type="button" data-choice="spock" aria-label="Spock. Vence Tesoura e Pedra">🖖</button>
+            </div>
+          </section>
+
+          <section class="panel history-panel" aria-labelledby="history-title">
+            <h2 class="panel-title" id="history-title">Últimas rodadas</h2>
+            <div class="history-list" id="history-list"></div>
+          </section>
+        </div>
+      </div>
+
+      <span class="sr-only" id="live-region" aria-live="assertive"></span>
+    </section>
+  </main>
+
+  <dialog id="rules-dialog">
+    <div class="dialog-inner">
+      <header class="dialog-header"><h2>Regras do jogo</h2><button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button></header>
+      <div class="dialog-body">
+        <ul class="rules">
+          <li><strong>✌️ Tesoura:</strong> corta Papel e decapita Lagarto.</li>
+          <li><strong>✋ Papel:</strong> cobre Pedra e refuta Spock.</li>
+          <li><strong>✊ Pedra:</strong> esmaga Tesoura e Lagarto.</li>
+          <li><strong>🦎 Lagarto:</strong> envenena Spock e come Papel.</li>
+          <li><strong>🖖 Spock:</strong> vaporiza Pedra e quebra Tesoura.</li>
+        </ul>
+      </div>
+      <footer class="dialog-actions"><button class="action-button primary" data-close-dialog type="button">Entendi</button></footer>
+    </div>
+  </dialog>
+
+  <dialog id="stats-dialog">
+    <div class="dialog-inner">
+      <header class="dialog-header"><h2>Estatísticas</h2><button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button></header>
+      <div class="dialog-body">
+        <label class="setting-row" style="margin-bottom:16px">
+          <span class="setting-label"><strong>Filtrar dificuldade</strong><small>Compare seu desempenho em cada nível.</small></span>
+          <select id="stats-filter"><option value="all">Todas</option><option value="easy">Fácil</option><option value="medium">Médio</option><option value="hard">Difícil</option><option value="expert">Perito</option></select>
+        </label>
+        <div id="stats-content"></div>
+      </div>
+      <footer class="dialog-actions"><button class="action-button primary" data-close-dialog type="button">Fechar</button></footer>
+    </div>
+  </dialog>
+
+  <dialog id="reset-dialog">
+    <div class="dialog-inner">
+      <header class="dialog-header"><h2>Resetar dados</h2><button class="close-button" data-close-dialog type="button" aria-label="Fechar">×</button></header>
+      <div class="dialog-body">
+        <p>Escolha o que será apagado. Esta ação não interfere nas configurações de tema, som, modo ou dificuldade.</p>
+      </div>
+      <footer class="dialog-actions">
+        <button class="action-button" id="reset-score-confirm" type="button">Zerar placar</button>
+        <button class="action-button danger" id="reset-all-confirm" type="button">Apagar histórico</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
