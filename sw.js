@@ -2,6 +2,7 @@ const CACHE_NAME = 'jokenpo-pro-v54';
 const APP_SHELL = [
   './',
   './index.html',
+  './game.html',
   './styles.css',
   './app.js',
   './core.js',
@@ -38,7 +39,7 @@ self.addEventListener('fetch', event => {
           }
           return response;
         })
-        .catch(() => cached || caches.match('./index.html'));
+        .catch(() => cached || caches.match('./game.html'));
 
       return cached || network;
     })
